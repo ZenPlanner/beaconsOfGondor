@@ -52,7 +52,7 @@ function setColor(hexColor) {
 	}
 }
 
-app.use(express.static('/home/pi/public')); //tell the server that ./public/ contains the static webpages
+app.use(express.static('/home/pi/beaconsOfGondor/public')); //tell the server that ./public/ contains the static webpages
 
 setColor("000000");
 
