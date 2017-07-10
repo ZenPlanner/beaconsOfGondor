@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+	<title>LED Controller</title>
+	<meta name="viewport" content="width=400px" />
+	
+	<script src="socket.io/socket.io.js"></script>
+	<style type="text/css">
+		body {
+			text-align: center;
+			margin-top: 50px;
+			background: #fff;
+		}
+ 
+
+	</style>
+  </head>
+  <body>
+	<button onClick="sendColor('ff0000')">Send red</button>
+	<button onClick="sendColor('00ff00')">Send green</button>
+	<button onClick="sendColor('0000ff')">Send blue</button>
+	<button onClick="sendColor('ffffff')">Send white</button> 
+	<button onClick="sendColor('000000')">Send off</button>	
+
+	<script type="text/javascript">
+		var socket = io.connect();
+		
+		socket.on('recievedColor', function (data) {
+			console.log('recievedColor' + data);
+			document.body.style.backgroundColor = '#'+data.value;
+			//document.getElementById("inputSlider").value = data.value;
+			//document.getElementById("outputText").innerHTML = data.value;
+
+
+		});
+		
+		function showValue(newValue)
+		{
+			document.getElementById("outputText").innerHTML=newValue;
+			//socket.emit('led', { value: newValue });
+
+			socket.emit('hello',{value:'asdfsdf'}); //send the new client its address for auto registry??
+		}
+
+		function sendColor(color){
+			socket.emit('sendColor',{value:color}); //send the new client its address for auto registry??
+			console.log(color);
+		}
+
+	</script>
+  </body>
+</html>
