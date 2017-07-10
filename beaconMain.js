@@ -23,6 +23,7 @@ app.get('/setColor', function(req, res) {
         var color = req.query.color;
         console.log(color);
         io.sockets.emit('recievedColor',{value:color});
+	setColor(color);
         res.end("I have received the ID: " + color);
 });
 
