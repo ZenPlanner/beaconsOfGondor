@@ -7,6 +7,10 @@
 
 //https://github.com/jperkin/node-rpio
 
+
+//EC2 port forwarding for port 80
+//http://www.lauradhamilton.com/how-to-set-up-a-nodejs-web-server-on-amazon-ec2
+
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
@@ -43,7 +47,7 @@ io.sockets.on('connection',function(socket){
 
 });
 
-server.listen(80);
+server.listen(8080);
 console.log('running');
 
 
