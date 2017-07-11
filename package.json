@@ -1,0 +1,23 @@
+{
+  "name": "beacons-of-gondor",
+  "version": "1.0.0",
+  "description": "simple websockets with http get requests",
+  "main": "beaconMain.js",
+  "dependencies": {
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZenPlanner/beaconsOfGondor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZenPlanner/beaconsOfGondor/issues"
+  },
+  "homepage": "https://github.com/ZenPlanner/beaconsOfGondor#readme"
+}
