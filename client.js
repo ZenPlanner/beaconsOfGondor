@@ -9,7 +9,17 @@ var pins = [
         new Gpio(14, {mode: Gpio.OUTPUT})  /* White */
     ];
 
-// Converts a 6 digit hex string to rgb colors
+var current = {
+    r: 0,
+    g: 0,
+    b: 0,
+    w: 0,
+    pattern: 'normal',
+    frequency: 0,
+    state: 'off'
+};
+
+// Converts a 6-8 digit hex string to rgbw colors
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(hex);
     return result ? {
@@ -32,9 +42,13 @@ function setColor(hexColor, pattern, frequency) {
     colorMap = hexToRgb(hexColor);
     if (colorMap != null) {
         setColorPins(colorMap.r, colorMap.g, colorMap.b, colorMap.w);
+        current.r = colorMap.r;
+        current.g = colorMap.g;
+        current.b = colorMap.b;
+        current.w = colorMap.w;
     }
     if (frequency != 0) {
-
+        
     }
 }
 
