@@ -1,3 +1,6 @@
+//examples calls
+///setColor?color=000000&pattern=normal
+
 //client.js
 var io = require('socket.io-client');
 var socket = io.connect('http://ec2-54-172-251-229.compute-1.amazonaws.com', {reconnect: true});
