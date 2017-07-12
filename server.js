@@ -65,7 +65,7 @@ io.sockets.on('connection',function(socket){
 
         socket.on('sendColor',function(data){
                 console.log(data);
-                io.sockets.emit('recievedColor',{color:data.color, pattern:'normal', frequency:10});
+                io.sockets.emit('recievedColor',{color:data.value, pattern:'normal', frequency:10});
             });
 
 
