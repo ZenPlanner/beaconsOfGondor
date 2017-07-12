@@ -49,24 +49,25 @@ function setColor(hexColor, pattern, frequency) {
 }
 
 function loop() {
-    if (current.pattern == 'normal') {
-        setColor(current.r, current.g, current.b, current.white);
+    if (current.pattern === 'normal') {
+
+        setColorPins(current.r, current.g, current.b, current.w);
     } else if (current.pattern == 'strobe') {
-        if (current.state == 'on') {
-            setColor(0, 0, 0, 0);
+        if (current.state === 'on') {
+            setColorPins(0, 0, 0, 0);
             current.state = 'off';
         } else {
-            setColor(current.r, current.g, current.b, current.white);
+            setColorPins(current.r, current.g, current.b, current.w);
             current.state = 'on';
         }
-    } else if (current.pattern == 'fade') {
+    } else if (current.pattern === 'fade') {
 
     }
 }
 
 
 
-var currentTimeout = setTimeout(loop, 10);
+var currentTimeout = setInterval(loop, 10);
 
 // Add a connect listener
 socket.on('connect', function (socket) {
@@ -84,5 +85,5 @@ socket.on('recievedColor', function (data) {
             current.w = colorMap.w;
             current.pattern = data.pattern;
             current.frequency = data.frequency;
-            currentTimeout = setTimeout(loop, data.frequency);
+            currentTimeout = setInterval(loop, data.frequency);
 }) ;
