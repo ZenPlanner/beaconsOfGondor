@@ -18,12 +18,18 @@ var pinGreen = new Gpio(18, {mode: Gpio.OUTPUT});
 var pinBlue = new Gpio(15, {mode: Gpio.OUTPUT});
 var pinWhite = new Gpio(14, {mode: Gpio.OUTPUT});
 
+// color: Hex color string
+// pattern:
+//      strobe: Flash color without fade
+//      fade: Flash color with fade
+// frequency:
+
 app.get('/setColor', function(req, res) {
 
         var color = req.query.color;
         console.log(color);
         io.sockets.emit('recievedColor',{value:color});
-	setColor(color);
+	    setColor(color);
         res.end("I have received the ID: " + color);
 });
 
@@ -65,32 +71,6 @@ io.sockets.on('connection',function(socket){
                 console.log(data);
                 io.sockets.emit('recievedColor',data);
                 setColor(data.value);
-                /* if (eval(data).value == 'ff0000') {
-                        pinRed.pwmWrite(255);
-                        pinGreen.pwmWrite(0);
-                        pinBlue.pwmWrite(0);
-                        pinWhite.pwmWrite(0);
-                } else if (eval(data).value == '00ff00') {
-                        pinRed.pwmWrite(0);
-                        pinGreen.pwmWrite(255);
-                        pinBlue.pwmWrite(0);
-                        pinWhite.pwmWrite(0);
-                } else if (eval(data).value == '0000ff') {
-                        pinRed.pwmWrite(0);
-                        pinGreen.pwmWrite(0);
-                        pinBlue.pwmWrite(255);
-                        pinWhite.pwmWrite(0);
-                } else if (eval(data).value == 'ffffff') {
-                        pinRed.pwmWrite(0);
-                        pinGreen.pwmWrite(0);
-                        pinBlue.pwmWrite(0);
-                        pinWhite.pwmWrite(255);
-                } else if (eval(data).value == '000000') {
-                        pinRed.pwmWrite(0);
-                        pinGreen.pwmWrite(0);
-                        pinBlue.pwmWrite(0);
-                        pinWhite.pwmWrite(0);
-                } */
             });
 
 
