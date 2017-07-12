@@ -31,10 +31,7 @@ function setColorPins(r, g, b, w) {
 function setColor(hexColor, pattern, frequency) {
     colorMap = hexToRgb(hexColor);
     if (colorMap != null) {
-        if (colorMap.r == 255 && colorMap.g == 255 && colorMap.b == 255)
-            setColorPins(0,0,0,255);
-        else
-            setColorPins(colorMap.r, colorMap.g, colorMap.b, 0);
+        setColorPins(colorMap.r, colorMap.g, colorMap.b, colorMap.w);
     }
     if (frequency != 0) {
 
