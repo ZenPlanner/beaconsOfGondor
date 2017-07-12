@@ -64,7 +64,9 @@ function loop() {
     }
 }
 
-var currentTimeout = setTimeout(loop(), 10);
+
+
+var currentTimeout = setTimeout(loop, 10);
 
 // Add a connect listener
 socket.on('connect', function (socket) {
@@ -82,5 +84,5 @@ socket.on('recievedColor', function (data) {
             current.w = colorMap.w;
             current.pattern = data.pattern;
             current.frequency = data.frequency;
-            currentTimeout = setTimeout(loop(), data.frequency);
+            currentTimeout = setTimeout(loop, data.frequency);
 }) ;
