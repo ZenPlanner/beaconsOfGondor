@@ -21,7 +21,7 @@ function hexToRgb(hex) {
 }
 
 function setColorPins(r, g, b, w) {    
-    pins[0]..pwmWrite(r);
+    pins[0].pwmWrite(r);
     pins[1].pwmWrite(g);
     pins[2].pwmWrite(b);
     pins[3].pwmWrite(w);   
