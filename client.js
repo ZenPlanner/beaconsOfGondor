@@ -27,7 +27,7 @@ var current = {
     w: 0,
     pattern: 'normal',
     frequency: 100,
-    state: 'off'
+    state: 'on'
 };
 
 // Converts a 6-8 digit hex string to rgbw colors
@@ -72,13 +72,13 @@ function setCurrentColors(hexColor) {
 
 function fadeIn() {
 	if (current.r < current.fader.r)
-		current.r = current.r++;
+		current.r = current.r + 1;
 	if (current.g < current.fader.g)
-		current.g = current.g++;
+		current.g = current.g + 1;
 	if (current.b < current.fader.b)
-		current.b = current.b++;
+		current.b = current.b + 1;
 	if (current.w < current.fader.w)
-		current.w = current.w++;
+		current.w = current.w + 1;
 	setColorPins(current.r, current.g, current.b, current.w);
 	if (current.r == current.fader.r &&
 		current.g == current.fader.g &&
@@ -90,15 +90,16 @@ function fadeIn() {
 
 function fadeOut() {
 	if (current.r > 0)
-		current.r = current.r--;
+		current.r = current.r - 1;;
 	if (current.g > 0)
-		current.g = current.g--;
+		current.g = current.g - 1;
 	if (current.b > 0)
-		current.b = current.b--;
+		current.b = current.b - 1;
 	if (current.w > 0)
-		current.w = current.w--;
+		current.w = current.w - 1;
 	setColorPins(current.r, current.g, current.b, current.w);
-	if (current.r === current.g === current.b === current.w === 0) 
+	if (current.r === 0 && current.g === 0 &&
+            current.b === 0 && current.w === 0) 
 		current.state = 'on'; // start fading in
 }
 
@@ -120,6 +121,16 @@ function loop() {
 			fadeOut();
 		}
     }
+}
+
+function printState() {
+    var logString = "Fader Setting: r:"+current.fader.r+" g:"+current.fader.g+
+                    " b:"+current.fader.b+" w:"+current.fader.w+"\r\n"+
+                    "Current Settings: r:"+current.r+" g:"+current.g+
+                    " b:"+current.b+" w:"+current.w+" pattern:"+
+                    current.pattern+" frequency:"+current.frequency+
+                    " state:"+current.state;
+    console.log(logString);
 }
 
 // start the running loop
