@@ -27,9 +27,9 @@
 		
 		socket.on('recievedColor', function (data) {
 			console.log('recievedColor' + data);
-			document.body.style.backgroundColor = '#'+data.value;
-			//document.getElementById("inputSlider").value = data.value;
-			//document.getElementById("outputText").innerHTML = data.value;
+			document.body.style.backgroundColor = '#'+data.color;
+			//document.getElementById("inputSlider").value = data.color;
+			//document.getElementById("outputText").innerHTML = data.color;
 
 
 		});
