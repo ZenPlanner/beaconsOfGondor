@@ -83,8 +83,9 @@ function fadeIn() {
 	if (current.r == current.fader.r &&
 		current.g == current.fader.g &&
 		current.b == current.fader.b &&
-		current.w == current.fader.w
-	} current.state = 'off'; // start fading out
+		current.w == current.fader.w) {
+	   current.state = 'off'; // start fading out
+    }
 }
 
 function fadeOut() {
