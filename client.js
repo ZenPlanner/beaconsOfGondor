@@ -19,7 +19,11 @@ var current = {
 		r:0,
 		g:0,
 		b:0,
-		w:0
+		w:0,
+        rRatio: 1,
+        gRatio: 1,
+        bRatio: 1,
+        wRatio: 1
 	},
     r: 0,
     g: 0,
@@ -68,38 +72,42 @@ function setCurrentColors(hexColor) {
     current.fader.g = colorMap.g;
     current.fader.b = colorMap.b;
     current.fader.w = colorMap.w;
+    current.fader.rRatio = colorMap.r / 255;
+    current.fader.gRatio = colorMap.g / 255;
+    current.fader.bRatio = colorMap.b / 255;
+    current.fader.wRatio = colorMap.w / 255;
 }
 
 function fadeIn() {
 	if (current.r < current.fader.r)
-		current.r = current.r + 1;
+		current.r = current.r + (current.rRatio * 1);
 	if (current.g < current.fader.g)
-		current.g = current.g + 1;
+		current.g = current.g + (current.gRatio * 1);
 	if (current.b < current.fader.b)
-		current.b = current.b + 1;
+		current.b = current.b + (current.bRatio * 1);
 	if (current.w < current.fader.w)
-		current.w = current.w + 1;
+		current.w = current.w + (current.wRatio * 1);
 	setColorPins(current.r, current.g, current.b, current.w);
-	if (current.r == current.fader.r &&
-		current.g == current.fader.g &&
-		current.b == current.fader.b &&
-		current.w == current.fader.w) {
+	if (current.r >= current.fader.r &&
+		current.g >= current.fader.g &&
+		current.b >= current.fader.b &&
+		current.w >= current.fader.w) {
 	   current.state = 'off'; // start fading out
     }
 }
 
 function fadeOut() {
 	if (current.r > 0)
-		current.r = current.r - 1;;
+		current.r = current.r - (current.rRatio * 1);
 	if (current.g > 0)
-		current.g = current.g - 1;
+		current.g = current.g - (current.gRatio * 1);
 	if (current.b > 0)
-		current.b = current.b - 1;
+		current.b = current.b - (current.bRatio * 1);
 	if (current.w > 0)
-		current.w = current.w - 1;
+		current.w = current.w - (current.wRatio * 1);
 	setColorPins(current.r, current.g, current.b, current.w);
-	if (current.r === 0 && current.g === 0 &&
-            current.b === 0 && current.w === 0) 
+	if (current.r <= 0 && current.g <= 0 &&
+            current.b <= 0 && current.w <= 0) 
 		current.state = 'on'; // start fading in
 }
 
