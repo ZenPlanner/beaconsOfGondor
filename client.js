@@ -46,11 +46,15 @@ function hexToRgb(hex) {
 }
 
 //Set the pwm hardware pins to the color values
-function setColorPins(r, g, b, w) {    
-    pins[0].pwmWrite(r);
-    pins[1].pwmWrite(g);
-    pins[2].pwmWrite(b);
-    pins[3].pwmWrite(w);   
+function setColorPins(r, g, b, w) {
+    if (r < 0) r = 0;
+    if (g < 0) g = 0;
+    if (b < 0) b = 0;
+    if (w < 0) w = 0;
+    pins[0].pwmWrite(Math.floor(r));
+    pins[1].pwmWrite(Math.floor(g));
+    pins[2].pwmWrite(Math.floor(b));
+    pins[3].pwmWrite(Math.floor(w));   
 }
 
 // pattern: normal, strobe, fade, stripe
@@ -68,7 +72,7 @@ function setCurrentColors(hexColor) {
     current.g = colorMap.g;
     current.b = colorMap.b;
     current.w = colorMap.w;
-	current.fader.r = colorMap.r;
+    current.fader.r = colorMap.r;
     current.fader.g = colorMap.g;
     current.fader.b = colorMap.b;
     current.fader.w = colorMap.w;
@@ -80,13 +84,13 @@ function setCurrentColors(hexColor) {
 
 function fadeIn() {
 	if (current.r < current.fader.r)
-		current.r = current.r + (current.rRatio * 1);
+		current.r = current.r + (current.fader.rRatio);
 	if (current.g < current.fader.g)
-		current.g = current.g + (current.gRatio * 1);
+		current.g = current.g + (current.fader.gRatio);
 	if (current.b < current.fader.b)
-		current.b = current.b + (current.bRatio * 1);
+		current.b = current.b + (current.fader.bRatio);
 	if (current.w < current.fader.w)
-		current.w = current.w + (current.wRatio * 1);
+		current.w = current.w + (current.fader.wRatio);
 	setColorPins(current.r, current.g, current.b, current.w);
 	if (current.r >= current.fader.r &&
 		current.g >= current.fader.g &&
@@ -98,13 +102,13 @@ function fadeIn() {
 
 function fadeOut() {
 	if (current.r > 0)
-		current.r = current.r - (current.rRatio * 1);
+		current.r = current.r - (current.fader.rRatio);
 	if (current.g > 0)
-		current.g = current.g - (current.gRatio * 1);
+		current.g = current.g - (current.fader.gRatio);
 	if (current.b > 0)
-		current.b = current.b - (current.bRatio * 1);
+		current.b = current.b - (current.fader.bRatio);
 	if (current.w > 0)
-		current.w = current.w - (current.wRatio * 1);
+		current.w = current.w - (current.fader.wRatio);
 	setColorPins(current.r, current.g, current.b, current.w);
 	if (current.r <= 0 && current.g <= 0 &&
             current.b <= 0 && current.w <= 0) 
@@ -137,7 +141,12 @@ function printState() {
                     "Current Settings: r:"+current.r+" g:"+current.g+
                     " b:"+current.b+" w:"+current.w+" pattern:"+
                     current.pattern+" frequency:"+current.frequency+
-                    " state:"+current.state;
+                    " state:"+current.state
+		    + " \r\nrRatio: " +current.fader.rRatio + "\r\n"+
+		     " \r\ngRatio: " +current.fader.gRatio + "\r\n"+
+		     " \r\nbRatio: " +current.fader.bRatio + "\r\n"+
+		     " \r\nwRatio: " +current.fader.wRatio + "\r\n"
+;
     console.log(logString);
 }
 
@@ -150,9 +159,8 @@ socket.on('connect', function (socket) {
 });
 
 socket.on('recievedColor', function (data) {
-            console.log('recievedColor' + data);
             clearTimeout(currentTimeout);
-			setCurrentColors(data.color);
+	    setCurrentColors(data.color);
             current.pattern = data.pattern;
             current.frequency = data.frequency;
             currentTimeout = setInterval(loop, data.frequency);
