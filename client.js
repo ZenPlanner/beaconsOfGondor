@@ -115,6 +115,12 @@ function fadeOut() {
 		current.state = 'on'; // start fading in
 }
 
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+
 function loop() {
     if (current.pattern === 'normal') {
         setColorPins(current.r, current.g, current.b, current.w);
@@ -132,7 +138,9 @@ function loop() {
 		} else {
 			fadeOut();
 		}
-    }
+    } else if (current.pattern === 'random') {
+		setColorPins(getRandomInt(0, 128), getRandomInt(0, 128), getRandomInt(0, 128), getRandomInt(0, 128));
+	}
 }
 
 function printState() {
