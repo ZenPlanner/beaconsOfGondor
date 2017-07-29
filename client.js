@@ -139,7 +139,7 @@ function loop() {
 			fadeOut();
 		}
     } else if (current.pattern === 'random') {
-		setColorPins(getRandomInt(0, 128), getRandomInt(0, 128), getRandomInt(0, 128), getRandomInt(0, 128));
+		setColorPins(getRandomInt(0, current.r), getRandomInt(0, current.g), getRandomInt(0, current.b), getRandomInt(0, current.w));
 	}
 }
 
