@@ -17,6 +17,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 var current = {
+    color: 00000000,
     r: 0,
     g: 0,
     b: 0,
@@ -49,6 +50,7 @@ app.get('/setColor', function(req, res) {
         current.w = colorMap.w;        
         current.pattern = pattern;
         current.frequency = frequency;
+        current.color = color;
 
         io.sockets.emit('recievedColor', {color:color, pattern:pattern, frequency:frequency});	 
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
@@ -62,6 +64,7 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 io.sockets.on('connection',function(socket){
 
         socket.emit('hello',{value:'hello'}); //send the new client its address for auto registry??
+        socket.emit('recievedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
         socket.on('sendColor',function(data){
                 console.log(data);
