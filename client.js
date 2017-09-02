@@ -4,6 +4,8 @@
 //client.js
 var io = require('socket.io-client');
 var socket = io.connect('http://ec2-54-172-251-229.compute-1.amazonaws.com', {reconnect: true});
+var os = require('os');
+var interfaces = os.networkInterfaces( );
 var Gpio = require('pigpio').Gpio;
 // setup the io pins
 var pins = [
@@ -143,6 +145,19 @@ function loop() {
 	}
 }
 
+function getLocalIpAddresses() {
+   var addresses = [];
+   for (var k in interfaces) {
+       for (var k2 in interfaces[k]) {
+           var address = interfaces[k][k2];
+           if (address.family === 'IPv4' && !address.internal) {
+               addresses.push(address.address);
+           }
+       }
+   }
+   return addresses;
+}
+
 function printState() {
     var logString = "Fader Setting: r:"+current.fader.r+" g:"+current.fader.g+
                     " b:"+current.fader.b+" w:"+current.fader.w+"\r\n"+
@@ -159,6 +174,7 @@ function printState() {
 }
 
 // start the running loop
+console.log(getLocalIpAddresses());
 var currentTimeout = setInterval(loop, 1000);
 
 // Add a connect listener
