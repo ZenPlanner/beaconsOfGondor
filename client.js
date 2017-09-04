@@ -168,23 +168,24 @@ function printState() {
 		    + " \r\nrRatio: " +current.fader.rRatio + "\r\n"+
 		     " \r\ngRatio: " +current.fader.gRatio + "\r\n"+
 		     " \r\nbRatio: " +current.fader.bRatio + "\r\n"+
-		     " \r\nwRatio: " +current.fader.wRatio + "\r\n"
-;
+		     " \r\nwRatio: " +current.fader.wRatio + "\r\n";
     console.log(logString);
 }
 
 // start the running loop
-console.log(getLocalIpAddresses());
 var currentTimeout = setInterval(loop, 1000);
 
-// Add a connect listener
+// Add a connect listener and log IP addresses on connect
+var myIPs = getLocalIpAddresses();
 socket.on('connect', function (socket) {
-    console.log('Connected!');
+	for (i in myIPs) {
+		socket.emit('logIP',{value:myIPs[i]});
+	}
 });
 
 socket.on('recievedColor', function (data) {
             clearTimeout(currentTimeout);
-	    setCurrentColors(data.color);
+			setCurrentColors(data.color);
             current.pattern = data.pattern;
             current.frequency = data.frequency;
             currentTimeout = setInterval(loop, data.frequency);

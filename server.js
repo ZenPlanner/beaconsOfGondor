@@ -26,6 +26,7 @@ var current = {
     frequency: 0,
     state: 'off'
 };
+var clientIPAddresses = [];
 
 // Converts a 6-8 digit hex string to rgbw colors
 function hexToRgb(hex) {
@@ -62,18 +63,23 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 
 
 io.sockets.on('connection',function(socket){
-
-        socket.emit('hello',{value:'hello'}); //send the new client its address for auto registry??
         socket.emit('recievedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
+		socket.on('logIP', function(data) {
+			clientIPAddresses.push(data.value);
+		});
+		
         socket.on('sendColor',function(data){
-                console.log(data);
-                io.sockets.emit('recievedColor',{color:data.value, pattern:'normal', frequency:10});
-            });
-
-
+            console.log(data);
+            io.sockets.emit('recievedColor',{color:data.value, pattern:'normal', frequency:10});
+        });
+		
         socket.on('led',function(data){
-                console.log(data);
+            console.log(data);
+        });
+		
+		socket.on('showIPs',function(data){
+            io.sockets.emit('recievedIPs',{addresses:clientIPAddresses});
         });
 
 });

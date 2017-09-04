@@ -16,11 +16,14 @@
 	</style>
   </head>
   <body>
-	<button onClick="sendColor('ff0000')">Send red</button>
-	<button onClick="sendColor('00ff00')">Send green</button>
-	<button onClick="sendColor('0000ff')">Send blue</button>
-	<button onClick="sendColor('ffffff')">Send white</button> 
-	<button onClick="sendColor('000000')">Send off</button>	
+	<button onClick="sendColor('ff000000')">Send red</button>
+	<button onClick="sendColor('00ff0000')">Send green</button>
+	<button onClick="sendColor('0000ff00')">Send blue</button>
+	<button onClick="sendColor('000000ff')">Send white</button> 
+	<button onClick="sendColor('00000000')">Send off</button>
+	<p>
+	<button onClick="showClientIPs()">Show IP Addresses</button><br />
+	<div id="IPAddresses"></div>
 
 	<script type="text/javascript">
 		var socket = io.connect();
@@ -34,17 +37,23 @@
 
 		});
 		
+		socket.on('receivedIPs', function (data) {
+			console.log(data);
+			document.getElementById("IPAddresses").innerHTML = data.addresses;
+		});
+		
 		function showValue(newValue)
 		{
 			document.getElementById("outputText").innerHTML=newValue;
-			//socket.emit('led', { value: newValue });
-
-			socket.emit('hello',{value:'asdfsdf'}); //send the new client its address for auto registry??
 		}
 
 		function sendColor(color){
 			socket.emit('sendColor',{value:color}); //send the new client its address for auto registry??
 			console.log(color);
+		}
+		
+		function showClientIPs() {
+			socket.emit('showIPs', {value:''});
 		}
 
 	</script>
