@@ -37,7 +37,7 @@
 
 		});
 		
-		socket.on('receivedIPs', function (data) {
+		socket.on('recievedIPs', function (data) {
 			console.log(data);
 			document.getElementById("IPAddresses").innerHTML = data.addresses;
 		});
