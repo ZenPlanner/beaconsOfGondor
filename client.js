@@ -177,7 +177,7 @@ var currentTimeout = setInterval(loop, 1000);
 
 // Add a connect listener and log IP addresses on connect
 var myIPs = getLocalIpAddresses();
-socket.on('connect', function (socket) {
+socket.on('connect', function (data) {
 	for (var i in myIPs) {
 		socket.emit('logIP',{value:myIPs[i]});
 	}
