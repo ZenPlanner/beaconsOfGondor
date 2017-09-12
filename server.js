@@ -66,8 +66,16 @@ io.sockets.on('connection',function(socket){
         socket.emit('recievedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
 	socket.on('logIP', function(data) {
-		console.log(data);
-		clientIPAddresses.push(data.value);
+            var found = false;
+            for(var i=0;i<clientIPAddresses.length;i++){
+                if(clientIPAddresses[i] === data.value){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                clientIPAddresses.push(data.value);
+            }
 	});
 		
         socket.on('sendColor',function(data){
