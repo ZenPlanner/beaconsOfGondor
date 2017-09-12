@@ -65,9 +65,10 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 io.sockets.on('connection',function(socket){
         socket.emit('recievedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
-		socket.on('logIP', function(data) {
-			clientIPAddresses.push(data.value);
-		});
+	socket.on('logIP', function(data) {
+		console.log(data);
+		clientIPAddresses.push(data.value);
+	});
 		
         socket.on('sendColor',function(data){
             console.log(data);
@@ -78,7 +79,8 @@ io.sockets.on('connection',function(socket){
             console.log(data);
         });
 		
-		socket.on('showIPs',function(data){
+	socket.on('showIPs',function(data){
+	    console.log(data);
             io.sockets.emit('recievedIPs',{addresses:clientIPAddresses});
         });
 
