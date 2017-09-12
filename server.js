@@ -57,6 +57,24 @@ app.get('/setColor', function(req, res) {
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
 });
 
+app.get('/party', function(req, res) {
+
+        var color = req.query.color;
+        var pattern = req.query.pattern != null ? req.query.pattern : 'random';
+        var frequency = req.query.frequency != null ? req.query.frequency : 2000;
+        var colorMap = hexToRgb(color);
+        current.r = colorMap.r;
+        current.g = colorMap.g;
+        current.b = colorMap.b;
+        current.w = colorMap.w;        
+        current.pattern = pattern;
+        current.frequency = frequency;
+        current.color = color;
+
+        io.sockets.emit('recievedColor', {color:color, pattern:pattern, frequency:frequency});   
+        res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
+});
+
 
 
 app.use(express.static('./public')); //tell the server that ./public/ contains the static webpages

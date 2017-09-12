@@ -141,7 +141,15 @@ function loop() {
 			fadeOut();
 		}
     } else if (current.pattern === 'random') {
-		setColorPins(getRandomInt(0, current.r), getRandomInt(0, current.g), getRandomInt(0, current.b), getRandomInt(0, current.w));
+
+        if (current.state === 'on') {
+            setColorPins(0, 0, 0, 0);
+            current.state = 'off';
+        } else {
+            setColorPins(getRandomInt(0, current.r), getRandomInt(0, current.g), getRandomInt(0, current.b), getRandomInt(0, current.w));
+            current.state = 'on';
+        }
+		
 	}
 }
 
