@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=400px" />
 	
 	<script src="socket.io/socket.io.js"></script>
+	<script src="./jscolor.min.js"></script>
 	<style type="text/css">
 		body {
 			text-align: center;
@@ -16,6 +17,8 @@
 	</style>
   </head>
   <body>
+    <input class="jscolor" value="000000" onChange="alert(this.value);">
+	<p>
 	<button onClick="sendColor('ff000000')">Send red</button>
 	<button onClick="sendColor('00ff0000')">Send green</button>
 	<button onClick="sendColor('0000ff00')">Send blue</button>
