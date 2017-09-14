@@ -191,7 +191,7 @@ socket.on('connect', function (data) {
 	}
 });
 
-socket.on('recievedColor', function (data) {
+socket.on('receivedColor', function (data) {
             clearTimeout(currentTimeout);
 			setCurrentColors(data.color);
             current.pattern = data.pattern;

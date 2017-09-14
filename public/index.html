@@ -31,8 +31,8 @@
 	<script type="text/javascript">
 		var socket = io.connect();
 		
-		socket.on('recievedColor', function (data) {
-			console.log('recievedColor' + data);
+		socket.on('receivedColor', function (data) {
+			console.log('receivedColor' + data);
 			document.body.style.backgroundColor = '#'+data.color;
 			//document.getElementById("inputSlider").value = data.color;
 			//document.getElementById("outputText").innerHTML = data.color;
@@ -40,7 +40,7 @@
 
 		});
 		
-		socket.on('recievedIPs', function (data) {
+		socket.on('receivedIPs', function (data) {
 			console.log(data);
 			document.getElementById("IPAddresses").innerHTML = data.addresses;
 		});

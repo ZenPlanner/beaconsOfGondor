@@ -53,7 +53,7 @@ app.get('/setColor', function(req, res) {
         current.frequency = frequency;
         current.color = color;
 
-        io.sockets.emit('recievedColor', {color:color, pattern:pattern, frequency:frequency});	 
+        io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency});
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
 });
 
@@ -71,7 +71,7 @@ app.get('/party', function(req, res) {
         current.frequency = frequency;
         current.color = color;
 
-        io.sockets.emit('recievedColor', {color:color, pattern:pattern, frequency:frequency});   
+        io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency});
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
 });
 
@@ -81,7 +81,7 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 
 
 io.sockets.on('connection',function(socket){
-        socket.emit('recievedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
+        socket.emit('receivedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
 	socket.on('logIP', function(data) {
             var found = false;
@@ -98,7 +98,7 @@ io.sockets.on('connection',function(socket){
 		
         socket.on('sendColor',function(data){
             console.log(data);
-            io.sockets.emit('recievedColor',{color:data.value, pattern:'normal', frequency:10});
+            io.sockets.emit('receivedColor',{color:data.value, pattern:'normal', frequency:10});
         });
 		
         socket.on('led',function(data){
@@ -107,7 +107,7 @@ io.sockets.on('connection',function(socket){
 		
 	socket.on('showIPs',function(data){
 	    console.log(data);
-            io.sockets.emit('recievedIPs',{addresses:clientIPAddresses});
+            io.sockets.emit('receivedIPs',{addresses:clientIPAddresses});
         });
 
 });
