@@ -7,6 +7,6 @@ if [[ $needsUpdate != 'Already up-to-date.' ]]
 then
    forever stop ./server.js
    echo "Updating"
-   forever start -l ./server.log -o ./serverOut.log -e serverError.log server.js
+   forever start -a -l ./server.log -o ./serverOut.log -e serverError.log server.js
 fi
 
