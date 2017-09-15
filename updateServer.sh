@@ -9,3 +9,10 @@ then
    echo "Updating"
    nohup node server.js &
 fi
+
+serverStarted=$(ps -A | awk '/node/ {print $0}')
+if [[ $serverStarted == '' ]]
+then
+    nohup node server.js &
+fi
+
