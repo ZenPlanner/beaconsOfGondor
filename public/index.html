@@ -17,7 +17,7 @@
 	</style>
   </head>
   <body>
-    <input class="jscolor" onChange="sendColor(this.value);">
+    <input class="jscolor" id="jscolor" onChange="sendColor(this.value);">
 	<p>
 	<button onClick="sendColor('ff000000')">Send red</button>
 	<button onClick="sendColor('00ff0000')">Send green</button>
@@ -34,11 +34,10 @@
 		socket.on('receivedColor', function (data) {
 			console.log('receivedColor' + data);
 			document.body.style.backgroundColor = '#'+data.color;
-            document.querySelector('.jscolor').jscolor.fromString(data.color);
+            document.getElementById('jscolor').jscolor.fromString(data.color);
+
 			//document.getElementById("inputSlider").value = data.color;
 			//document.getElementById("outputText").innerHTML = data.color;
-
-
 		});
 		
 		socket.on('receivedIPs', function (data) {
