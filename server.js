@@ -98,7 +98,7 @@ io.sockets.on('connection',function(socket){
 		
         socket.on('sendColor',function(data){
             console.log(data);
-            io.sockets.emit('receivedColor',{color:data.value, pattern:'normal', frequency:10});
+            io.sockets.emit('receivedColor',{color:data.value, pattern:data.pattern != null ? data.pattern : 'normal', frequency:data.frequency != null ? data.frequency : '100'});
         });
 		
         socket.on('led',function(data){
