@@ -75,7 +75,19 @@ app.get('/party', function(req, res) {
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
 });
 
-
+function setColor(data) {
+    var color = data.color;
+    var pattern = data.pattern != null ? data.pattern : 'random';
+    var frequency = data.frequency != null ? data.frequency : 2000;
+    var colorMap = hexToRgb(color);
+    current.r = colorMap.r;
+    current.g = colorMap.g;
+    current.b = colorMap.b;
+    current.w = colorMap.w;
+    current.pattern = pattern;
+    current.frequency = frequency;
+    current.color = color;
+}
 
 app.use(express.static('./public')); //tell the server that ./public/ contains the static webpages
 
@@ -98,7 +110,8 @@ io.sockets.on('connection',function(socket){
 		
         socket.on('sendColor',function(data){
             console.log(data);
-            io.sockets.emit('receivedColor',{color:data.value, pattern:data.pattern != null ? data.pattern : 'normal', frequency:data.frequency != null ? data.frequency : '100'});
+            setColor(data);
+            io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency});
         });
 		
         socket.on('led',function(data){
