@@ -135,11 +135,20 @@ function loop() {
             current.state = 'on';
         }
     } else if (current.pattern === 'fade') {
-		if (current.state === 'on') {
-			fadeIn();
-		} else {
-			fadeOut();
-		}
+        if (current.state === 'on') {
+            fadeIn();
+        } else {
+            fadeOut();
+        }
+    } else if (current.pattern === 'randomfade') {
+        if (current.r === current.g === current.b === current.w === 0) {
+            setColorPins(getRandomInt(0, current.fader.r), getRandomInt(0, current.fader.g), getRandomInt(0, current.fader.b), getRandomInt(0, current.fader.w));
+        }
+        if (current.state === 'on') {
+            fadeIn();
+        } else {
+            fadeOut();
+        }
     } else if (current.pattern === 'random') {
 
         if (current.state === 'on') {

@@ -1,5 +1,7 @@
 Beacon Project
 
+Installed forever (npm install forever -g)
+
 Schedule Auto-update of git repo:
 	Add new crontab like below.  This will run the update.sh script every 5 minutes.
 		> crontab -e

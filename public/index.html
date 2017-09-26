@@ -17,7 +17,15 @@
 	</style>
   </head>
   <body>
-    <input class="jscolor" id="jscolor" onChange="sendColor(this.value);">
+    Color Picker: <input id="myColor" class="jscolor" value="000000""> <br />
+	Pattern: <select>
+			 	<option selected value="normal">Normal</option>
+				<option value="strobe">Strobe</option>
+				<option value="fade">Fade</option>
+			 </select>
+	<br />
+	Frequency: <input type="text" id="myFrequency" value="1000">
+	<br />
 	<p>
 	<button onClick="sendColor('ff000000')">Send red</button>
 	<button onClick="sendColor('00ff0000')">Send green</button>
@@ -25,6 +33,7 @@
 	<button onClick="sendColor('000000ff')">Send white</button> 
 	<button onClick="sendColor('00000000')">Send off</button>
 	<p>
+	<button onClick="sendRequest()">SetColor</button> &nbsp;&nbsp;
 	<button onClick="showClientIPs()">Show IP Addresses</button><br />
 	<div id="IPAddresses"></div>
 
@@ -34,10 +43,6 @@
 		socket.on('receivedColor', function (data) {
 			console.log('receivedColor' + data);
 			document.body.style.backgroundColor = '#'+data.color;
-            document.getElementById('jscolor').jscolor.fromString(data.color);
-
-			//document.getElementById("inputSlider").value = data.color;
-			//document.getElementById("outputText").innerHTML = data.color;
 		});
 		
 		socket.on('receivedIPs', function (data) {
@@ -51,9 +56,14 @@
 		}
 
 		function sendColor(color){
-			socket.emit('sendColor',{value:color}); //send the new client its address for auto registry??
+			socket.emit('sendColor',{value:color});
 			console.log(color);
 		}
+
+        function sendRequest(){
+            socket.emit('setColor',{color:document.getElementById('myColor').value, pattern:document.getElementById('myPattern').options[document.getElementById('myPattern').selectedIndex].value, frequency:document.getElementById('myFrequency').value});
+            console.log(color);
+        }
 		
 		function showClientIPs() {
 			socket.emit('showIPs', {value:''});
