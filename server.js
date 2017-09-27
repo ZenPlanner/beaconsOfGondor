@@ -30,7 +30,6 @@ var clientIPAddresses = [];
 
 // Converts a 6-8 digit hex string to rgbw colors
 function hexToRgb(hex) {
-    console.log(hex);
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(hex);
     return result ? {
         r: parseInt(result[1], 16),
@@ -110,9 +109,7 @@ io.sockets.on('connection',function(socket){
 	});
 		
         socket.on('sendColor',function(data){
-            console.log(data);
             setColor(data);
-            console.log(current);
             io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency});
         });
 		
