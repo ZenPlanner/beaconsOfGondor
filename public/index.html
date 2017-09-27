@@ -61,7 +61,11 @@
 		}
 
         function sendRequest(){
-            socket.emit('sendColor',{color:document.getElementById('myColor').value, pattern:document.getElementById('myPattern').options[document.getElementById('myPattern').selectedIndex].value, frequency:document.getElementById('myFrequency').value});
+            socket.emit('sendColor',
+				{ color:document.getElementById('myColor').value,
+				  pattern:document.getElementById('myPattern').options[document.getElementById('myPattern').selectedIndex].value,
+				  frequency:document.getElementById('myFrequency').value
+				});
         }
 		
 		function showClientIPs() {
