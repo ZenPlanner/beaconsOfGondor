@@ -111,6 +111,7 @@ io.sockets.on('connection',function(socket){
         socket.on('sendColor',function(data){
             console.log(data);
             setColor(data);
+            console.log(current);
             io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency});
         });
 		
