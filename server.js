@@ -60,7 +60,7 @@ app.get('/setColor', function(req, res) {
 app.get('/party', function(req, res) {
 
         var color = req.query.color;
-        var pattern = req.query.pattern != null ? req.query.pattern : 'random';
+        var pattern = req.query.pattern != null ? req.query.pattern : 'party';
         var frequency = req.query.frequency != null ? req.query.frequency : 2000;
         var colorMap = hexToRgb(color);
         current.r = colorMap.r;

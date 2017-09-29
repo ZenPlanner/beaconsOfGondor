@@ -124,42 +124,49 @@ function getRandomInt(min, max) {
 }
 
 function loop() {
-    if (current.pattern === 'normal') {
-        setColorPins(current.r, current.g, current.b, current.w);
-    } else if (current.pattern === 'strobe') {
-        if (current.state === 'on') {
-            setColorPins(0, 0, 0, 0);
-            current.state = 'off';
-        } else {
+    switch (current.pattern) {
+        case 'normal':
             setColorPins(current.r, current.g, current.b, current.w);
-            current.state = 'on';
-        }
-    } else if (current.pattern === 'fade') {
-        if (current.state === 'on') {
-            fadeIn();
-        } else {
-            fadeOut();
-        }
-    } else if (current.pattern === 'randomfade') {
-        if (current.r === current.g === current.b === current.w === 0) {
-            setColorPins(getRandomInt(0, current.fader.r), getRandomInt(0, current.fader.g), getRandomInt(0, current.fader.b), getRandomInt(0, current.fader.w));
-        }
-        if (current.state === 'on') {
-            fadeIn();
-        } else {
-            fadeOut();
-        }
-    } else if (current.pattern === 'random') {
-
-        if (current.state === 'on') {
-            setColorPins(0, 0, 0, 0);
-            current.state = 'off';
-        } else {
+            break;
+        case 'strobe':
+            if (current.state === 'on') {
+                setColorPins(0, 0, 0, 0);
+                current.state = 'off';
+            } else {
+                setColorPins(current.r, current.g, current.b, current.w);
+                current.state = 'on';
+            }
+            break;
+        case 'fade':
+            if (current.state === 'on') {
+                fadeIn();
+            } else {
+                fadeOut();
+            }
+            break;
+        case 'party':
             setColorPins(getRandomInt(0, current.r), getRandomInt(0, current.g), getRandomInt(0, current.b), getRandomInt(0, current.w));
-            current.state = 'on';
-        }
-		
-	}
+            break;
+        case 'randomfade':
+            if (current.r === current.g === current.b === current.w === 0) {
+                setColorPins(getRandomInt(0, current.fader.r), getRandomInt(0, current.fader.g), getRandomInt(0, current.fader.b), getRandomInt(0, current.fader.w));
+            }
+            if (current.state === 'on') {
+                fadeIn();
+            } else {
+                fadeOut();
+            }
+            break;
+        case 'random':
+            if (current.state === 'on') {
+                setColorPins(0, 0, 0, 0);
+                current.state = 'off';
+            } else {
+                setColorPins(getRandomInt(0, current.r), getRandomInt(0, current.g), getRandomInt(0, current.b), getRandomInt(0, current.w));
+                current.state = 'on';
+            }
+            break;
+    }
 }
 
 function getLocalIpAddresses() {
