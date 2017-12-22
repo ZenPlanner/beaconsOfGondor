@@ -144,6 +144,15 @@ function loop() {
                 fadeOut();
             }
             break;
+        case 'christmas':
+            if (current.state == 'green') {
+                setColorPins(getRandomInt(0,255),0,0,0);
+                current.state = 'red';
+            } else {
+                setColorPins(0,getRandomInt(0,255),0,0);
+                current.state = 'green';
+            }
+            break;
         case 'party':
             setColorPins(getRandomInt(0, current.r), getRandomInt(0, current.g), getRandomInt(0, current.b), getRandomInt(0, current.w));
             break;
