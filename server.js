@@ -71,9 +71,9 @@ app.get('/party', function(req, res) {
         current.pattern = pattern;
         current.frequency = frequency;
         current.color = color;
-
-        io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency});
-        res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
+        var destination = data.destination != null ? data.destination : 'ALL';
+        io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
+        res.end("received: color:" + color + " pattern:" + pattern + " frequency:" + frequency + " destination:" + destination);
 });
 
 function setColor(data) {
