@@ -111,8 +111,8 @@ io.sockets.on('connection',function(socket){
 	});
 		
         socket.on('sendColor',function(data){
-            setColor(data);
             var destination = data.destination != null ? data.destination : 'ALL';
+            setColor(data);
             io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency, destination:destination});
         });
 		
