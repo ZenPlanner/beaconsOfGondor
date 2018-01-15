@@ -24,7 +24,8 @@ var current = {
     w: 0,
     pattern: 'normal',
     frequency: 0,
-    state: 'off'
+    state: 'off',
+    destination: 'ALL'
 };
 var clientIPAddresses = [];
 
@@ -87,6 +88,7 @@ function setColor(data) {
     current.pattern = pattern;
     current.frequency = frequency;
     current.color = color;
+    current.destination = 'ALL';
 }
 
 app.use(express.static('./public')); //tell the server that ./public/ contains the static webpages
@@ -110,7 +112,8 @@ io.sockets.on('connection',function(socket){
 		
         socket.on('sendColor',function(data){
             setColor(data);
-            io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency});
+            var destination = data.destination != null ? data.destination : 'ALL';
+            io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency, destination:destination});
         });
 		
         socket.on('led',function(data){

@@ -6,6 +6,7 @@ var io = require('socket.io-client');
 var socket = io.connect('http://ec2-54-172-251-229.compute-1.amazonaws.com', {reconnect: true});
 var os = require('os');
 var interfaces = os.networkInterfaces( );
+var hostname = os.hostname();
 var Gpio = require('pigpio').Gpio;
 // setup the io pins
 var pins = [
@@ -218,8 +219,11 @@ socket.on('connect', function (data) {
 
 socket.on('receivedColor', function (data) {
             clearTimeout(currentTimeout);
-			setCurrentColors(data.color);
-            current.pattern = data.pattern;
-            current.frequency = data.frequency;
-            currentTimeout = setInterval(loop, data.frequency);
+            var destination = data.destination != null ? data.destination : 'ALL';
+            if(destination == 'ALL' || hostname.indexOf(destination) > -1) {
+                setCurrentColors(data.color);
+                current.pattern = data.pattern;
+                current.frequency = data.frequency;
+                currentTimeout = setInterval(loop, data.frequency);
+            }
 }) ;
