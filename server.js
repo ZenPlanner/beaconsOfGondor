@@ -55,7 +55,7 @@ app.get('/setColor', function(req, res) {
         current.color = color;
         var destination = req.query.destination != null ? req.query.destination : 'ALL';
         io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
-        res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
+        res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency+ " destination:" + destination);
 });
 
 app.get('/party', function(req, res) {
