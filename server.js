@@ -53,7 +53,7 @@ app.get('/setColor', function(req, res) {
         current.pattern = pattern;
         current.frequency = frequency;
         current.color = color;
-        var destination = data.destination != null ? data.destination : 'ALL';
+        var destination = req.query.destination != null ? req.query.destination : 'ALL';
         io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency);
 });
@@ -71,7 +71,7 @@ app.get('/party', function(req, res) {
         current.pattern = pattern;
         current.frequency = frequency;
         current.color = color;
-        var destination = data.destination != null ? data.destination : 'ALL';
+        var destination = req.query.destination != null ? req.query.destination : 'ALL';
         io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:" + frequency + " destination:" + destination);
 });
@@ -111,8 +111,8 @@ io.sockets.on('connection',function(socket){
 	});
 		
         socket.on('sendColor',function(data){
-            var destination = data.destination != null ? data.destination : 'ALL';
             setColor(data);
+            var destination = data.destination != null ? data.destination : 'ALL';
             io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency, destination:destination});
         });
 		
