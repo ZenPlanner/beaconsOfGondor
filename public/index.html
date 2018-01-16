@@ -17,15 +17,37 @@
 	</style>
   </head>
   <body>
-    Color Picker: <input id="myColor" class="jscolor" value="000000""> <br />
-	Pattern: <select id="myPattern">
-			 	<option selected value="normal">Normal</option>
-				<option value="strobe">Strobe</option>
-				<option value="fade">Fade</option>
-			 </select>
-	<br />
-	Frequency: <input type="text" id="myFrequency" value="1000">
-	<br />
+  	<div>
+    	Color Picker: <input id="myColor" class="jscolor" value="000000""> <br />
+	</div>
+	<div>
+		Frequency: <input type="text" id="myFrequency" value="1000">
+	</div>
+	<div>
+		Pattern:
+		<select id="idPattern">
+			<option value="christmas">Christmas</option>
+			<option value="normal" selected>Normal</option>
+			<option value="strobe">Strobe</option>
+			<option value="outage">Outage</option>
+			<option value="fade">Fade</option>
+			<option value="party">Party</option>
+			<option value="randomfade">Random Fade</option>
+			<option value="random">Random Strobe</option>
+		</select>
+	</div>
+	<p>
+	<div>
+		Destination:
+		<select id="idDestination">
+			<option value="ALL" selected>All</option>
+			<option value="Beacon1">GG Pod</option>
+			<option value="Beacon2">Shawn K Pod</option>
+			<option value="Beacon3">Josh T Pod</option>
+			<option value="Beacon4">Customer Support</option>
+			<option value="Beacon5">Mike D Pod</option>
+		</select>
+	</div>
 	<p>
 	<button onClick="sendColor('ff000000')">Send red</button>
 	<button onClick="sendColor('00ff0000')">Send green</button>
@@ -33,8 +55,10 @@
 	<button onClick="sendColor('000000ff')">Send white</button> 
 	<button onClick="sendColor('00000000')">Send off</button>
 	<p>
-	<button onClick="sendRequest()">SetColor</button> &nbsp;&nbsp;
+	<button onClick="submitRequest()">Submit Request</button><br />
+	<p>
 	<button onClick="showClientIPs()">Show IP Addresses</button><br />
+
 	<div id="IPAddresses"></div>
 
 	<script type="text/javascript">
@@ -70,6 +94,15 @@
 		
 		function showClientIPs() {
 			socket.emit('showIPs', {value:''});
+		}
+
+		function submitRequest() {
+            socket.emit('sendColor',
+                { color:document.getElementById('myColor').value,
+                    pattern:document.getElementById('myPattern').options[document.getElementById('myPattern').selectedIndex].value,
+                    frequency:document.getElementById('myFrequency').value,
+                    destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+                });
 		}
 
 	</script>
