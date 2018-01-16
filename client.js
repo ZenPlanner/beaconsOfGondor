@@ -138,6 +138,15 @@ function loop() {
                 current.state = 'on';
             }
             break;
+        case 'outage':
+            if (current.state == 'red') {
+                setColorPins(255,60,0,0);
+                current.state = 'yellow';
+            } else {
+                setColorPins(255,0,0,0);
+                current.state = 'red';
+            }
+            break;
         case 'fade':
             if (current.state === 'on') {
                 fadeIn();
