@@ -1,27 +1,25 @@
 class LEDController {
 
-    current = {
-        fader: {
-            r:0,
-            g:0,
-            b:0,
-            w:0,
-            rRatio: 1,
-            gRatio: 1,
-            bRatio: 1,
-            wRatio: 1
-        },
-        r: 0,
-        g: 0,
-        b: 0,
-        w: 0,
-        pattern: 'normal',
-        frequency: 100,
-        state: 'on'
-    };
-
     constructor () {
-
+        this.current = {
+            fader: {
+                r:0,
+                g:0,
+                b:0,
+                w:0,
+                rRatio: 1,
+                gRatio: 1,
+                bRatio: 1,
+                wRatio: 1
+            },
+            r: 0,
+            g: 0,
+            b: 0,
+            w: 0,
+            pattern: 'normal',
+            frequency: 100,
+            state: 'on'
+        };
     };
 
     // Converts a 6-8 digit hex string to rgbw colors
