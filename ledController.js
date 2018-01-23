@@ -42,7 +42,7 @@ class LEDController {
 
     // set the colors on a new call
     setCurrentColors(hexColor) {
-        var colorMap = this.hexToRgb(hexColor);
+        var colorMap = LEDController.hexToRgb(hexColor);
         this.current.r = colorMap.r;
         this.current.g = colorMap.g;
         this.current.b = colorMap.b;
@@ -132,27 +132,27 @@ class LEDController {
 
     goChristmas() {
         if (this.current.state == 'green') {
-            return this.setReturnValue(this.getRandomInt(0, 255), 0, 0, 0, 'red');
+            return this.setReturnValue(LEDController.getRandomInt(0, 255), 0, 0, 0, 'red');
         } else {
-            return this.setReturnValue(0, this.getRandomInt(0, 255), 0, 0, 'green');
+            return this.setReturnValue(0, LEDController.getRandomInt(0, 255), 0, 0, 'green');
         }
     }
 
     goParty() {
-        return this.setReturnValue(this.getRandomInt(0, this.current.r), this.getRandomInt(0, this.current.g), this.getRandomInt(0, this.current.b), this.getRandomInt(0, this.current.w), 'party');
+        return this.setReturnValue(LEDController.getRandomInt(0, this.current.r), LEDController.getRandomInt(0, this.current.g), LEDController.getRandomInt(0, this.current.b), LEDController.getRandomInt(0, this.current.w), 'party');
     }
 
     goRandom() {
         if (this.current.state === 'on') {
             return this.setReturnValue(0, 0, 0, 0, 'off');
         } else {
-            return this.setReturnValue(this.getRandomInt(0, this.current.r), this.getRandomInt(0, this.current.g), this.getRandomInt(0, this.current.b), this.getRandomInt(0, this.current.w), 'on');
+            return this.setReturnValue(LEDController.getRandomInt(0, this.current.r), LEDController.getRandomInt(0, this.current.g), LEDController.getRandomInt(0, this.current.b), LEDController.getRandomInt(0, this.current.w), 'on');
         }
     }
 
     goRandomFade() {
         if (this.current.r === this.current.g === this.current.b === this.current.w === 0) {
-            return this.setReturnValue(this.getRandomInt(0, this.current.fader.r), this.getRandomInt(0, this.current.fader.g), this.getRandomInt(0, this.current.fader.b), this.getRandomInt(0, this.current.fader.w));
+            return this.setReturnValue(LEDController.getRandomInt(0, this.current.fader.r), LEDController.getRandomInt(0, this.current.fader.g), LEDController.getRandomInt(0, this.current.fader.b), LEDController.getRandomInt(0, this.current.fader.w));
         }
         if (this.current.state === 'on') {
             return this.fadeIn();
