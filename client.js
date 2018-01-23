@@ -8,7 +8,9 @@ var os = require('os');
 var interfaces = os.networkInterfaces( );
 var hostname = os.hostname();
 var Gpio = require('pigpio').Gpio;
-this.ledController = require('./ledController.js');
+var lc = require('./ledController.js');
+var ledController = new lc();
+
 // setup the io pins
 var pins = [
         new Gpio(23, {mode: Gpio.OUTPUT}), /* Red */
