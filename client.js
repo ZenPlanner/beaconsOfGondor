@@ -1,5 +1,7 @@
 //examples calls
 ///setColor?color=000000&pattern=normal
+//ssh
+//ec2-user@http://ec2-54-172-251-229.compute-1.amazonaws.com/
 
 //client.js
 var io = require('socket.io-client');
