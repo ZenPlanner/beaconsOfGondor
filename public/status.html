@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="socket.io/socket.io.js"></script>
+    <script src="./jscolor.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    var socket = io.connect();
+    var currentTimeout = 0;
+
+    function loop(data) {
+        document.body.style.backgroundColor = document.body.style.backgroundColor == data.color ? '#00000000' : '#' + data.color;
+    }
+
+    socket.on('receivedColor', function (data) {
+        console.log('receivedColor' + data);
+        if (data.pattern == 'strobe') {
+            currentTimeout = setInterval(loop, data.frequency, data);
+        } else {
+            if (currentTimeout != 0) {
+                clearInterval(currentTimeout);
+                currentTimeout = 0;
+            }
+            document.body.style.backgroundColor = '#' + data.color;
+        }
+    });
+
+    socket.on('receivedIPs', function (data) {
+        console.log(data);
+        document.getElementById("IPAddresses").innerHTML = data.addresses;
+    });
+
+    function showValue(newValue)
+    {
+        document.getElementById("outputText").innerHTML=newValue;
+    }
+
+    function sendColor(color){
+        socket.emit('sendColor',{value:color});
+        console.log(color);
+    }
+
+    function sendRequest(){
+        socket.emit('sendColor',
+            { color:document.getElementById('idColor').value,
+                pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                frequency:document.getElementById('idFrequency').value
+            });
+    }
+
+    function showClientIPs() {
+        socket.emit('showIPs', {value:''});
+    }
+
+    function submitRequest() {
+        socket.emit('sendColor',
+            { color:document.getElementById('idColor').value,
+                pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                frequency:document.getElementById('idFrequency').value,
+                destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+            });
+    }
+
+</script>
+
+</body>
+</html>
