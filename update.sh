@@ -2,10 +2,11 @@
 
 cd /home/pi/beaconsOfGondor
 git fetch
-needsUpdate=$(git pull | awk '/Already up-to-date/ {print $0}')
-if [[ $needsUpdate != 'Already up-to-date.' ]]
+BEHIND=$(git rev-list --count origin/master ^HEAD)
+if [[ "$BEHIND" != "0" ]]
 then
-   sudo killall node
-   echo "Updating"
-   sudo node client.js &
+    git pull
+    sudo killall node
+    echo "Updating"
+    sudo node client.js &
 fi
