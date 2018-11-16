@@ -65,11 +65,17 @@
             }) ;
 
             function setBackgroundColor(current) {
-                var newColor = '#' +
-                    Math.floor(current.r).toString(16) +
-                    Math.floor(current.g).toString(16) +
-                    Math.floor(current.b).toString(16) +
-                    Math.floor(current.w).toString(16);
+                var red = Math.floor(current.r).toString(16);
+                var green = Math.floor(current.g).toString(16);
+                var blue = Math.floor(current.b).toString(16);
+                while (red.length < 0)
+                    red = '0' + red;
+                while (green.length < 0)
+                    green = '0' + green;
+                while (blue.length < 0)
+                    blue = '0' + blue;
+
+                var newColor = '#' + red + green + blue;
                     document.getElementById('eyeColor').style.backgroundColor = newColor;
             }
 
