@@ -18,7 +18,7 @@
   </head>
   <body>
   	<div>
-    	Color Picker: <input id="idColor" class="jscolor" value="000000""> <br />
+    	Color Picker: <input id="idColor" class="jscolor" value="000000"> <br />
 	</div>
 	<div>
 		Frequency: <input type="text" id="idFrequency" value="1000">
@@ -80,15 +80,20 @@
 		}
 
 		function sendColor(color){
-			socket.emit('sendColor',{value:color});
-			console.log(color);
+            socket.emit('sendColor',
+                { color:color,
+                    pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                    frequency:document.getElementById('idFrequency').value,
+                    destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+                });
 		}
 
         function sendRequest(){
             socket.emit('sendColor',
 				{ color:document.getElementById('idColor').value,
 				  pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
-				  frequency:document.getElementById('idFrequency').value
+				  frequency:document.getElementById('idFrequency').value,
+				  destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
 				});
         }
 		
