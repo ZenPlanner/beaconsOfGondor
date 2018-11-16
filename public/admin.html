@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+	<title>LED Controller</title>
+	<meta name="viewport" content="width=400px" />
+	
+	<script src="socket.io/socket.io.js"></script>
+	<script src="./jscolor.min.js"></script>
+	<style type="text/css">
+		body {
+			text-align: center;
+			margin-top: 50px;
+			background: #fff;
+		}
+ 
+
+	</style>
+  </head>
+  <body>
+  	<div>
+    	Color Picker: <input id="idColor" class="jscolor" value="000000"> <br />
+	</div>
+	<div>
+		Frequency: <input type="text" id="idFrequency" value="1000">
+	</div>
+	<div>
+		Pattern:
+		<select id="idPattern">
+			<option value="christmas">Christmas</option>
+			<option value="normal" selected>Normal</option>
+			<option value="strobe">Strobe</option>
+			<option value="outage">Outage</option>
+			<option value="fade">Fade</option>
+			<option value="party">Party</option>
+			<option value="randomfade">Random Fade</option>
+			<option value="random">Random Strobe</option>
+		</select>
+	</div>
+	<p>
+	<div>
+		Destination:
+		<select id="idDestination">
+			<option value="ALL" selected>All</option>
+			<option value="Beacon1">GG Pod</option>
+			<option value="Beacon2">Shawn K Pod</option>
+			<option value="Beacon3">Josh T Pod</option>
+			<option value="Beacon4">Customer Support</option>
+			<option value="Beacon5">Mike D Pod</option>
+		</select>
+	</div>
+	<p>
+	<button onClick="sendColor('ff0000')">Send red</button>
+	<button onClick="sendColor('00ff00')">Send green</button>
+	<button onClick="sendColor('0000ff')">Send blue</button>
+	<!--- <button onClick="sendColor('000000ff')">Send white</button> --->
+	<button onClick="sendColor('000000')">Send off</button>
+	<p>
+		<button onclick="sendOutage()">Send Application Outage</button>
+		<button onclick="sendReleaseInProgress()">Send Release In Progress</button>
+		<button onclick="sendHelpdeskRequest()">Send Helpdesk Request</button>
+		<button onclick="sendPhonesDown()">Send Phones Down</button>
+		<button onclick="sendInternetDown()">Send Internet Down</button>
+	<p>
+	<button onClick="submitRequest()">Submit Request</button><br />
+	<p>
+	<button onClick="showClientIPs()">Show IP Addresses</button><br />
+
+	<div id="IPAddresses"></div>
+
+	<script type="text/javascript">
+		var socket = io.connect();
+		
+		socket.on('receivedColor', function (data) {
+			console.log('receivedColor' + data);
+			document.body.style.backgroundColor = '#'+data.color;
+		});
+		
+		socket.on('receivedIPs', function (data) {
+			console.log(data);
+			document.getElementById("IPAddresses").innerHTML = data.addresses;
+		});
+		
+		function showValue(newValue)
+		{
+			document.getElementById("outputText").innerHTML=newValue;
+		}
+
+		function sendColor(color){
+            socket.emit('sendColor',
+                { color:color,
+                    pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                    frequency:document.getElementById('idFrequency').value,
+                    destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+                });
+		}
+
+        function sendRequest(){
+            socket.emit('sendColor',
+				{ color:document.getElementById('idColor').value,
+				  pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+				  frequency:document.getElementById('idFrequency').value,
+				  destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+				});
+        }
+		
+		function showClientIPs() {
+			socket.emit('showIPs', {value:''});
+		}
+
+		function submitRequest() {
+            socket.emit('sendColor',
+                { color:document.getElementById('idColor').value,
+                    pattern:document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                    frequency:document.getElementById('idFrequency').value,
+                    destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+                });
+		}
+
+		function sendOutage() {
+            socket.emit('sendColor',
+                { color:'FF00FF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendReleaseInProgress() {
+            socket.emit('sendColor',
+                { color:'0000FF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendHelpdeskRequest() {
+            socket.emit('sendColor',
+                { color:'FFFFFF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendPhonesDown() {
+            socket.emit('sendColor',
+                { color:'00FFFF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendInternetDown() {
+            socket.emit('sendColor',
+                { color:'FF5500',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+	</script>
+  </body>
+</html>
