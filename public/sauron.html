@@ -9,30 +9,16 @@
         <div id="eyeColor" style="background:#BB0000; height:689px; width:680px;">
             <img src="./White eye.png">
         </div>
+        <div>
+            Legend: <br />
+            Flashing Blue: Release <br />
+            Steady Green: Release complete / All Systems Nominal <br />
+        </div>
         <script src="./ledController.js"></script>
         <script type="text/javascript">
             var socket = io.connect();
             var ledController = new LEDController();
             var currentTimeout = 0;
-
-            /* function loop(data) {
-                document.getElementById('eyeColor').style.backgroundColor = document.getElementById('eyeColor').style.backgroundColor ? '#00000000' : '#' + data.color;
-            }
-
-            socket.on('receivedColor', function (data) {
-                console.log('receivedColor' + data);
-                if (data.pattern == 'strobe') {
-                    currentTimeout = setInterval(loop, data.frequency, data);
-                } else {
-                    if (currentTimeout != 0) {
-                        clearInterval(currentTimeout);
-                        currentTimeout = 0;
-                    }
-                    document.getElementById('eyeColor').style.backgroundColor = '#' + data.color;
-                }
-            });
-
-            */
 
             socket.on('receivedIPs', function (data) {
                 console.log(data);
