@@ -1,7 +1,7 @@
 //client.js
 require('dotenv').config();
 var io = require('socket.io-client');
-var socket = io.connect(process.env.EC2_URL, {reconnect: true});
+var socket = io.connect(process.env.SERVER_URL, {reconnect: true});
 var os = require('os');
 var interfaces = os.networkInterfaces( );
 var hostname = os.hostname();
