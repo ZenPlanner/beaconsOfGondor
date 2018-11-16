@@ -11,9 +11,11 @@
         </div>
         <script type="text/javascript">
             var socket = io.connect();
+            var lc = require('../ledController.js');
+            var ledController = new lc();
             var currentTimeout = 0;
 
-            function loop(data) {
+            /* function loop(data) {
                 document.getElementById('eyeColor').style.backgroundColor = document.getElementById('eyeColor').style.backgroundColor ? '#00000000' : '#' + data.color;
             }
 
@@ -29,6 +31,8 @@
                     document.getElementById('eyeColor').style.backgroundColor = '#' + data.color;
                 }
             });
+
+            */
 
             socket.on('receivedIPs', function (data) {
                 console.log(data);
@@ -64,6 +68,27 @@
                         frequency:document.getElementById('idFrequency').value,
                         destination:document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
                     });
+            }
+
+            socket.on('receivedColor', function (data) {
+                clearTimeout(currentTimeout);
+                ledController.setCurrentColors(data.color);
+                ledController.current.pattern = data.pattern;
+                ledController.current.frequency = data.frequency;
+                currentTimeout = setInterval(loop, data.frequency);
+            }) ;
+
+            function setBackgroundColor(current) {
+                var newColor = '#' +
+                    Math.floor(current.r).toString(16) +
+                    Math.floor(current.g).toString(16) +
+                    Math.floor(current.b).toString(16) +
+                    Math.floor(current.w).toString(16);
+                    document.getElementById('eyeColor').style.backgroundColor = newColor;
+            }
+
+            function loop() {
+                setBackgroundColor(ledController.getPinSettings());
             }
 
         </script>
