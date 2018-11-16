@@ -55,6 +55,12 @@
 	<!--- <button onClick="sendColor('000000ff')">Send white</button> --->
 	<button onClick="sendColor('000000')">Send off</button>
 	<p>
+		<button onclick="sendOutage()">Send Application Outage</button>
+		<button onclick="sendReleaseInProgress()">Send Release In Progress</button>
+		<button onclick="sendHelpdeskRequest()">Send Helpdesk Request</button>
+		<button onclick="sendPhonesDown()">Send Phones Down</button>
+		<button onclick="sendInternetDown()">Send Internet Down</button>
+	<p>
 	<button onClick="submitRequest()">Submit Request</button><br />
 	<p>
 	<button onClick="showClientIPs()">Show IP Addresses</button><br />
@@ -110,6 +116,46 @@
                 });
 		}
 
+		function sendOutage() {
+            socket.emit('sendColor',
+                { color:'FF00FF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendReleaseInProgress() {
+            socket.emit('sendColor',
+                { color:'0000FF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendHelpdeskRequest() {
+            socket.emit('sendColor',
+                { color:'FFFFFF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendPhonesDown() {
+            socket.emit('sendColor',
+                { color:'00FFFF',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
+        function sendInternetDown() {
+            socket.emit('sendColor',
+                { color:'FF5500',
+                    pattern:'strobe',
+                    frequency:'500',
+                    destination:'ALL'
+                });
+        }
 	</script>
   </body>
 </html>
