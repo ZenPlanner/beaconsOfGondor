@@ -9,10 +9,10 @@
         <div id="eyeColor" style="background:#BB0000; height:689px; width:680px;">
             <img src="./White eye.png">
         </div>
+        <script src="./jscolor.min.js"></script>
         <script type="text/javascript">
             var socket = io.connect();
-            var lc = require('../ledController.js');
-            var ledController = new lc();
+            var ledController = new LEDController();
             var currentTimeout = 0;
 
             /* function loop(data) {
