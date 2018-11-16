@@ -1,11 +1,7 @@
-//examples calls
-///setColor?color=000000&pattern=normal
-//ssh
-//ec2-user@http://ec2-54-172-251-229.compute-1.amazonaws.com/
-
 //client.js
+require('dotenv').config();
 var io = require('socket.io-client');
-var socket = io.connect('http://ec2-54-172-251-229.compute-1.amazonaws.com', {reconnect: true});
+var socket = io.connect(process.env.EC2_URL, {reconnect: true});
 var os = require('os');
 var interfaces = os.networkInterfaces( );
 var hostname = os.hostname();
