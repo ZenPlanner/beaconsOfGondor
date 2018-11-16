@@ -9,3 +9,4 @@ Schedule Auto-update of git repo:
 	To see if the cron job ran:
 		grep CRON /var/log/syslog
 
+sudo npm install dotenv
