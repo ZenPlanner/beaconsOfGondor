@@ -162,6 +162,31 @@ class LEDController {
 
     }
 
+    goRainbow() {
+        switch (this.current.state) {
+            case 'red':
+                return this.setReturnValue(226, 87, 30, 0, 'orangeish');
+            case 'orangeish':
+                return this.setReturnValue(255, 87, 127, 0, 'orange');
+            case 'orange':
+                return this.setReturnValue(255, 255, 0, 0, 'yellow');
+            case 'yellow':
+                return this.setReturnValue(0, 255, 0, 0, 'green');
+            case 'green':
+                return this.setReturnValue(150, 191, 51, 0, 'somegreen');
+            case 'somegreen':
+                return this.setReturnValue(0, 0, 255, 0, 'blue');
+            case 'blue':
+                return this.setReturnValue(75, 0, 130, 0, 'indigo');
+            case 'indigo':
+                return this.setReturnValue(139, 0, 255, 0, 'violet');
+            case 'violet':
+                return this.setReturnValue(255, 255, 255, 255, 'white');
+            case 'white':
+                return this.setReturnValue(255, 0, 0, 0, 'red');
+        }
+    }
+
     getPinSettings() {
         var retVal = {};
         switch (this.current.pattern) {
@@ -192,6 +217,6 @@ class LEDController {
         }
         return retVal;
     };
-};
+}
 
 module.exports = LEDController;
