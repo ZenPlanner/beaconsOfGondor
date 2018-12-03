@@ -214,6 +214,9 @@ class LEDController {
             case 'random':
                 retVal = this.goRandom();
                 break;
+            case 'rainbow':
+                retVal = this.goRainbow();
+                break;
         }
         return retVal;
     };
