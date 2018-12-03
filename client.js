@@ -18,10 +18,10 @@ var pins = [
     ];
 
 function setHardwarePins(current) {
-    pins[0].pwmWrite(Math.floor(current.r));
-    pins[1].pwmWrite(Math.floor(current.g));
-    pins[2].pwmWrite(Math.floor(current.b));
-    pins[3].pwmWrite(Math.floor(current.w));
+    pins[0].pwmWrite(Math.floor(ledController.current.r));
+    pins[1].pwmWrite(Math.floor(ledController.current.g));
+    pins[2].pwmWrite(Math.floor(ledController.current.b));
+    pins[3].pwmWrite(Math.floor(ledController.current.w));
 }
 
 function loop() {
