@@ -163,6 +163,9 @@ class LEDController {
     }
 
     goRainbow() {
+        if (this.current === undefined || this.current.state === undefined) {
+            this.current.state = 'white';
+        }
         switch (this.current.state) {
             case 'red':
                 return this.setReturnValue(226, 87, 30, 0, 'orangeish');
@@ -181,7 +184,7 @@ class LEDController {
             case 'indigo':
                 return this.setReturnValue(139, 0, 255, 0, 'violet');
             case 'violet':
-                return this.setReturnValue(255, 255, 255, 255, 'white');
+                return this.setReturnValue(0, 0, 0, 255, 'white');
             case 'white':
                 return this.setReturnValue(255, 0, 0, 0, 'red');
         }
