@@ -1,4 +1,14 @@
-Beacon Project
+# Beacon Project
+
+to run locally:
+
+install dependencies:
+
+`npm install`
+
+to run:
+
+`npm start server.js` 
 
 Installed forever (npm install forever -g)
 
