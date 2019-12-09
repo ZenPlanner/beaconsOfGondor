@@ -152,7 +152,12 @@
     }
 
     function sendProgram(program) {
-        socket.emit('sendProgram', program);
+        socket.emit('sendProgram', {
+            frequency: program.frequency,
+            lightPattern: program.lightPattern,
+            colorPattern: program.colorPattern,
+            colors: program.colors
+        });
     }
 
     function sendRed() {
