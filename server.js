@@ -138,8 +138,8 @@ io.sockets.on('connection',function(socket){
         });
 
         socket.on('sendProgram',function(data){
-            setProgramState(data);
-            io.sockets.emit('receivedProgram',programState);
+            //setProgramState(data);
+            io.sockets.emit('receivedProgram',data);
         });
 		
         socket.on('led',function(data){
