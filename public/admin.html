@@ -76,7 +76,7 @@
         <div class="h5 card-title mx-auto mt-2">Quick Actions</div>
         <div class="card-body">
             <div class="row mb-1 mx-auto my-3">
-                <button type="button" class="btn btn-danger mx-auto" onClick="sendColor('ff0000')">Send red</button>
+                <button type="button" class="btn btn-danger mx-auto" onClick="sendRed()">Send red</button>
                 <button type="button" class="btn btn-success mx-auto" onClick="sendColor('00ff00')">Send green</button>
                 <button type="button" class="btn btn-primary mx-auto" onClick="sendColor('0000ff')">Send blue</button>
                 <!--- <button onClick="sendColor('000000ff')">Send white</button> --->
@@ -98,6 +98,10 @@
             <div class="row mb-1 mx-auto my-3">
                 <button type="button" class="btn btn-warning mx-auto" onclick="sendInternetDown()">Send Internet Down
                 </button>
+                <button type="button" class="btn btn-info mx-auto" onClick="showClientIPs()">Show IP Addresses</button>
+            </div>
+            <div class="row mb-1 mx-auto my-3">
+                <button type="button" class="btn btn-warning mx-auto" onclick="sendRainbowProgram()">Fading Rainbow</button>
                 <button type="button" class="btn btn-info mx-auto" onClick="showClientIPs()">Show IP Addresses</button>
             </div>
         </div>
@@ -141,6 +145,33 @@
                 frequency: document.getElementById('idFrequency').value,
                 destination: document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
             });
+    }
+
+    function sendProgram(program) {
+        socket.emit('sendProgram', program);
+    }
+
+    function sendRed() {
+        const program = {"frequency":1000,"lightPattern":"solid","colorPattern":"list","colors":["FF000000", ""]};
+        sendProgram(program);
+    }
+
+    function sendRainbowProgram() {
+        const program = {
+            "frequency" : 1000,
+            "lightPattern" : "fade",
+            "colorPattern" : "list",
+            "colors" : [
+                "FF000000",
+                "FF550000",
+                "FFBB0000",
+                "00FF0000",
+                "0000FF00",
+                "4400FF00",
+                "FF00FF00"
+            ]
+        };
+        sendProgram(program);
     }
 
     function sendRequest() {

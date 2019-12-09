@@ -27,6 +27,20 @@ var current = {
     state: 'off',
     destination: 'ALL'
 };
+
+var programState = {
+    frequency: 1000,
+    lightPattern: "solid",
+    colorPattern: "list",
+    colors: [
+        "FF000000",
+        "00FF0000",
+        "0000FF00",
+        "000000FF"
+    ],
+    destination: "all"
+};
+
 var clientIPAddresses = [];
 
 // Converts a 6-8 digit hex string to rgbw colors
@@ -91,6 +105,13 @@ function setColor(data) {
     current.destination = 'ALL';
 }
 
+function setProgramState(data) {
+    programState.frequency = data.frequency;
+    programState.lightPattern = data.lightPattern;
+    programState.colorPattern = data.colorPattern;
+    programState.colors = data.colors;
+}
+
 app.use(express.static('./public')); //tell the server that ./public/ contains the static webpages
 
 
@@ -114,6 +135,13 @@ io.sockets.on('connection',function(socket){
             setColor(data);
             var destination = data.destination != null ? data.destination : 'ALL';
             io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency, destination:destination});
+        });
+
+        socket.on('sendProgram',function(data){
+            alert(JSON.stringify(data));
+            setProgramState(data);
+            alert(JSON.stringify(programState));
+            io.sockets.emit('receivedProgram',programState);
         });
 		
         socket.on('led',function(data){
