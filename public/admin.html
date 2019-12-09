@@ -124,6 +124,10 @@
         document.getElementById("IPAddresses").innerHTML = wrappedIps(data.addresses);
     });
 
+    socket.on('receivedProgram', function (data) {
+        console.log('receivedProgram' + data);
+    }) ;
+
     function wrappedIps(ipAddresses){
         const addressesArray = ipAddresses.toString().split(",");
         return addressesArray.map(it => wrapIndividualIp(it)).sort().toString().replace(/,/g,'');

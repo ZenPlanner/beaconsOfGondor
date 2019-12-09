@@ -138,9 +138,7 @@ io.sockets.on('connection',function(socket){
         });
 
         socket.on('sendProgram',function(data){
-            alert(JSON.stringify(data));
             setProgramState(data);
-            alert(JSON.stringify(programState));
             io.sockets.emit('receivedProgram',programState);
         });
 		
