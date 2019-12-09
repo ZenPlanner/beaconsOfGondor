@@ -117,7 +117,6 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 
 io.sockets.on('connection',function(socket){
     socket.emit('receivedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
-    socket.emit('receivedProgram', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
 	socket.on('logIP', function(data) {
             var found = false;
@@ -139,9 +138,8 @@ io.sockets.on('connection',function(socket){
     });
 
     socket.on('sendProgram',function(data){
-        //setProgramState(data);
-        //io.sockets.emit('receivedProgram',data);
-        io.sockets.emit('receivedProgram',{color:current.color, pattern:current.pattern, frequency:current.frequency, destination:destination});
+        setProgramState(data);
+        io.sockets.emit('receivedProgram',data);
     });
 		
     socket.on('led',function(data){
