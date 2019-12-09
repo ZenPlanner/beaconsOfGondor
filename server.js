@@ -139,7 +139,7 @@ io.sockets.on('connection',function(socket){
 
     socket.on('sendProgram',function(data){
         setProgramState(data);
-        io.sockets.emit('receivedProgram',data);
+        io.sockets.emit('receivedProgram',programState);
     });
 		
     socket.on('led',function(data){
