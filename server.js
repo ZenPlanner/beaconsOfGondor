@@ -117,6 +117,7 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 
 io.sockets.on('connection',function(socket){
     socket.emit('receivedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
+    socket.emit('receivedProgram', {color:current.color, pattern:current.pattern, frequency:current.frequency});
 
 	socket.on('logIP', function(data) {
             var found = false;
