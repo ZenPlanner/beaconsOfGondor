@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>LED Controller</title>
+    <meta name="viewport" content="width=400px"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="socket.io/socket.io.js"></script>
+    <script src="./jscolor.min.js"></script>
+    <style type="text/css">
+        body {
+            /*text-align: center;*/
+            /*margin-top: 50px;*/
+            /*background: #fff;*/
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container container-fluid">
+    <div class="pt-5">
+        <div class="card offset-3 col-6 bg-light">
+            <div class="h5 card-title mx-auto mt-2">Control Panel</div>
+            <div class="card-body mx-auto">
+                <div class="form-group">
+                    <div class="form-inline">
+                        <label for="idColor" class="mr-1">Color Picker: </label>
+                        <input id="idColor" class="jscolor form-control" value="000000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-inline">
+                        <label for="idFrequency" class="mr-1">Frequency: </label>
+                        <input type="text" id="idFrequency" class="form-control" value="1000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-inline">
+                        <label for="idPattern" class="mr-1">Pattern:</label>
+                        <select id="idPattern" class="form-control">
+                            <option value="christmas">Christmas</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="strobe">Strobe</option>
+                            <option value="outage">Outage</option>
+                            <option value="fade">Fade</option>
+                            <option value="party">Party</option>
+                            <option value="randomfade">Random Fade</option>
+                            <option value="random">Random Strobe</option>
+                            <option value="rainbow">Rainbow</option>
+                        </select>
+                    </div>
+                </div>
+                <p>
+                <div class="form-group">
+                    <div class="form-inline">
+                        <label for="idDestination" class="mr-1">Destination:</label>
+                        <select id="idDestination" class="form-control">
+                            <option value="ALL" selected>All</option>
+                            <option value="Beacon1">Beacon 1</option>
+                            <option value="Beacon2">Beacon 2</option>
+                            <option value="Beacon3">Beacon 3</option>
+                            <option value="Beacon4">Beacon 4</option>
+                            <option value="Beacon5">Beacon 5</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <button type="button" class="btn btn-dark mx-auto form-control" onClick="submitRequest()">Send Custom Color
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card offset-3 col-6 bg-light">
+        <div class="h5 card-title mx-auto mt-2">Quick Actions</div>
+        <div class="card-body">
+            <div class="row mb-1 mx-auto my-3">
+                <button type="button" class="btn btn-danger mx-auto" onClick="sendRed()">Send red</button>
+                <button type="button" class="btn btn-success mx-auto" onClick="sendColor('00ff00')">Send green</button>
+                <button type="button" class="btn btn-primary mx-auto" onClick="sendColor('0000ff')">Send blue</button>
+                <!--- <button onClick="sendColor('000000ff')">Send white</button> --->
+                <button type="button" class="btn btn-dark mx-auto" onClick="sendColor('000000')">Send off</button>
+            </div>
+            <div class="row mb-1 mx-auto my-3">
+                <button type="button" class="btn btn-danger mx-auto" onclick="sendOutage()">Send Application Outage
+                </button>
+                <button type="button" class="btn btn-primary mx-auto" onclick="sendReleaseInProgress()">Send Release In
+                    Progress
+                </button>
+            </div>
+            <div class="row mb-1 mx-auto my-3">
+                <button type="button" class="btn btn-outline-dark mx-auto" onclick="sendHelpdeskRequest()">Send Helpdesk
+                    Request
+                </button>
+                <button type="button" class="btn btn-info mx-auto" onclick="sendPhonesDown()">Send Phones Down</button>
+            </div>
+            <div class="row mb-1 mx-auto my-3">
+                <button type="button" class="btn btn-warning mx-auto" onclick="sendInternetDown()">Send Internet Down
+                </button>
+                <button type="button" class="btn btn-info mx-auto" onClick="showClientIPs()">Show IP Addresses</button>
+            </div>
+            <div class="row mb-1 mx-auto my-3">
+                <button type="button" class="btn btn-warning mx-auto" onclick="sendRainbowProgram()">Fading Rainbow</button>
+                <button type="button" class="btn btn-info mx-auto" onClick="showClientIPs()">Show IP Addresses</button>
+            </div>
+        </div>
+        <div class="card-footer ml-n3 mr-n3 text-muted">
+            <ul id="IPAddresses" class="list-unstyled row"></ul>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var socket = io.connect();
+
+    socket.on('receivedColor', function (data) {
+        console.log('receivedColor' + data);
+        document.body.style.backgroundColor = '#' + data.color;
+    });
+
+    socket.on('receivedIPs', function (data) {
+        console.log(data);
+        document.getElementById("IPAddresses").innerHTML = wrappedIps(data.addresses);
+    });
+
+    socket.on('receivedProgram', function (data) {
+        console.log('receivedProgram ' + JSON.stringify(data));
+    }) ;
+
+    function wrappedIps(ipAddresses){
+        const addressesArray = ipAddresses.toString().split(",");
+        return addressesArray.map(it => wrapIndividualIp(it)).sort().toString().replace(/,/g,'');
+    }
+
+    function wrapIndividualIp(ipAddress){
+        return '<li class="list-group-item list-group-item-light col-xs-12 col-sm-6 col-md-4 col-lg-3">' + ipAddress + '</li>';
+    }
+
+    function showValue(newValue) {
+        document.getElementById("outputText").innerHTML = newValue;
+    }
+
+    function sendColor(color) {
+        socket.emit('sendColor',
+            {
+                color: color,
+                pattern: document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                frequency: document.getElementById('idFrequency').value,
+                destination: document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+            });
+    }
+
+    function sendProgram(program) {
+        socket.emit('sendProgram', {
+            frequency: program.frequency,
+            lightPattern: program.lightPattern,
+            colorPattern: program.colorPattern,
+            colors: program.colors
+        });
+    }
+
+    function sendRed() {
+        const program = {"frequency":1000,"lightPattern":"solid","colorPattern":"list","colors":["FF000000"]};
+        sendProgram(program);
+    }
+
+    function sendRainbowProgram() {
+        const program = {
+            "frequency" : 10,
+            "lightPattern" : "fade",
+            "colorPattern" : "list",
+            "colors" : [
+                "FF000000",
+                "FF550000",
+                "FFBB0000",
+                "00FF0000",
+                "0000FF00",
+                "4400FF00",
+                "FF00FF00"
+            ]
+        };
+        sendProgram(program);
+    }
+
+    function sendRequest() {
+        socket.emit('sendColor',
+            {
+                color: document.getElementById('idColor').value,
+                pattern: document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                frequency: document.getElementById('idFrequency').value,
+                destination: document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+            });
+    }
+
+    function showClientIPs() {
+        socket.emit('showIPs', {value: ''});
+    }
+
+    function submitRequest() {
+        socket.emit('sendColor',
+            {
+                color: document.getElementById('idColor').value,
+                pattern: document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
+                frequency: document.getElementById('idFrequency').value,
+                destination: document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
+            });
+    }
+
+    function sendOutage() {
+        socket.emit('sendColor',
+            {
+                color: 'FF00FF',
+                pattern: 'strobe',
+                frequency: '500',
+                destination: 'ALL'
+            });
+    }
+
+    function sendReleaseInProgress() {
+        socket.emit('sendColor',
+            {
+                color: '0000FF',
+                pattern: 'strobe',
+                frequency: '500',
+                destination: 'ALL'
+            });
+    }
+
+    function sendHelpdeskRequest() {
+        socket.emit('sendColor',
+            {
+                color: 'FFFFFF',
+                pattern: 'strobe',
+                frequency: '500',
+                destination: 'ALL'
+            });
+    }
+
+    function sendPhonesDown() {
+        socket.emit('sendColor',
+            {
+                color: '00FFFF',
+                pattern: 'strobe',
+                frequency: '500',
+                destination: 'ALL'
+            });
+    }
+
+    function sendInternetDown() {
+        socket.emit('sendColor',
+            {
+                color: 'FF5500',
+                pattern: 'strobe',
+                frequency: '500',
+                destination: 'ALL'
+            });
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
