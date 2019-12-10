@@ -7,15 +7,6 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="socket.io/socket.io.js"></script>
     <script src="./jscolor.min.js"></script>
-    <style type="text/css">
-        body {
-            /*text-align: center;*/
-            /*margin-top: 50px;*/
-            /*background: #fff;*/
-        }
-
-
-    </style>
 </head>
 <body>
 <div class="container container-fluid">
@@ -28,6 +19,8 @@
                         <label for="idColor" class="mr-1">Color Picker: </label>
                         <input id="idColor" class="jscolor form-control" value="000000">
                     </div>
+                    <button type="button" class="btn btn-dark mx-auto form-control" onClick="addColorToList(document.getElementById('idColor').value)">Add Custom Color</button>
+                    <button type="button" class="btn btn-dark mx-auto form-control" onClick="colors = [];">Reset Colors</button>
                 </div>
                 <div class="form-group">
                     <div class="form-inline">
@@ -37,31 +30,24 @@
                 </div>
                 <div class="form-group">
                     <div class="form-inline">
-                        <label for="idPattern" class="mr-1">Pattern:</label>
-                        <select id="idPattern" class="form-control">
-                            <option value="christmas">Christmas</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="strobe">Strobe</option>
-                            <option value="outage">Outage</option>
+                        <label for="idLightPattern" class="mr-1">Light Pattern:</label>
+                        <select id="idLightPattern" class="form-control">
+                            <option value="solid" selected>Solid</option>
+                            <option value="strobe" selected>Strobe</option>
                             <option value="fade">Fade</option>
-                            <option value="party">Party</option>
-                            <option value="randomfade">Random Fade</option>
-                            <option value="random">Random Strobe</option>
-                            <option value="rainbow">Rainbow</option>
                         </select>
                     </div>
                 </div>
                 <p>
                 <div class="form-group">
                     <div class="form-inline">
-                        <label for="idDestination" class="mr-1">Destination:</label>
-                        <select id="idDestination" class="form-control">
-                            <option value="ALL" selected>All</option>
-                            <option value="Beacon1">Beacon 1</option>
-                            <option value="Beacon2">Beacon 2</option>
-                            <option value="Beacon3">Beacon 3</option>
-                            <option value="Beacon4">Beacon 4</option>
-                            <option value="Beacon5">Beacon 5</option>
+                        <label for="idColorPattern" class="mr-1">Color Pattern:</label>
+                        <select id="idColorPattern" class="form-control">
+                            <option value="random">Random</option>
+                            <option value="list" selected>List</option>
+                            <option value="randomlist" selected>Random List</option>
+                            <option value="range">Range</option>
+                            <option value="randomrange">Random Range</option>
                         </select>
                     </div>
                 </div>
@@ -112,12 +98,8 @@
 </div>
 
 <script type="text/javascript">
+    var colors = [];
     var socket = io.connect();
-
-    socket.on('receivedColor', function (data) {
-        console.log('receivedColor' + data);
-        document.body.style.backgroundColor = '#' + data.color;
-    });
 
     socket.on('receivedIPs', function (data) {
         console.log(data);
@@ -183,14 +165,18 @@
         sendProgram(program);
     }
 
-    function sendRequest() {
-        socket.emit('sendColor',
-            {
-                color: document.getElementById('idColor').value,
-                pattern: document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
-                frequency: document.getElementById('idFrequency').value,
-                destination: document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
-            });
+    function addColorToList(color) {
+        var found = false;
+        for(var i=0;i<colors.length;i++){
+            if(colors[i] === color){
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            colors.push(color);
+        }
+        alert(JSON.stringify(colors));
     }
 
     function showClientIPs() {
@@ -198,13 +184,13 @@
     }
 
     function submitRequest() {
-        socket.emit('sendColor',
-            {
-                color: document.getElementById('idColor').value,
-                pattern: document.getElementById('idPattern').options[document.getElementById('idPattern').selectedIndex].value,
-                frequency: document.getElementById('idFrequency').value,
-                destination: document.getElementById('idDestination').options[document.getElementById('idDestination').selectedIndex].value
-            });
+        const program = {
+            "frequency" : document.getElementById('idFrequency').value,
+            "lightPattern" : document.getElementById('idLightPattern').options[document.getElementById('idLightPattern').selectedIndex].value,
+            "colorPattern" : document.getElementById('idcolorPattern').options[document.getElementById('idColorPattern').selectedIndex].value,
+            "colors" : colors
+        };
+        sendProgram(program);
     }
 
     function sendOutage() {
