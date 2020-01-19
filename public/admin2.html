@@ -20,8 +20,12 @@
                         <input id="idColor" class="jscolor form-control" value="000000">
                     </div>
                     <button type="button" class="btn btn-dark mx-auto form-control" onClick="addColorToList(document.getElementById('idColor').value)">Add Custom Color</button>
-                    <button type="button" class="btn btn-dark mx-auto form-control" onClick="colors = [];">Reset Colors</button>
+                    <button type="button" style="margin-top:5px;" class="btn btn-dark mx-auto form-control" onClick="colors = [];">Reset Colors</button>
                 </div>
+                <div class="form-inline" id="colorList">
+
+                </div>
+                <br />
                 <div class="form-group">
                     <div class="form-inline">
                         <label for="idFrequency" class="mr-1">Frequency: </label>
@@ -62,11 +66,11 @@
         <div class="h5 card-title mx-auto mt-2">Quick Actions</div>
         <div class="card-body">
             <div class="row mb-1 mx-auto my-3">
-                <button type="button" class="btn btn-danger mx-auto" onClick="sendRed()">Send red</button>
-                <button type="button" class="btn btn-success mx-auto" onClick="sendColor('00ff00')">Send green</button>
-                <button type="button" class="btn btn-primary mx-auto" onClick="sendColor('0000ff')">Send blue</button>
+                <button type="button" class="btn btn-danger mx-auto" onClick="sendColor(0xFF000000)">Send red</button>
+                <button type="button" class="btn btn-success mx-auto" onClick="sendColor(0x00FF0000)">Send green</button>
+                <button type="button" class="btn btn-primary mx-auto" onClick="sendColor(0x0000FF00)">Send blue</button>
                 <!--- <button onClick="sendColor('000000ff')">Send white</button> --->
-                <button type="button" class="btn btn-dark mx-auto" onClick="sendColor('000000')">Send off</button>
+                <button type="button" class="btn btn-dark mx-auto" onClick="sendColor(0x00000000)">Send off</button>
             </div>
             <div class="row mb-1 mx-auto my-3">
                 <button type="button" class="btn btn-danger mx-auto" onclick="sendOutage()">Send Application Outage
@@ -97,9 +101,13 @@
     </div>
 </div>
 
+<script src="ledController.js"></script>
 <script type="text/javascript">
+    //var lc = require('./ledController.js');
+    var ledController = new LEDController();
     var colors = [];
     var socket = io.connect();
+    var currentTimeout = setInterval(loop, 1000);
 
     socket.on('receivedIPs', function (data) {
         console.log(data);
@@ -108,6 +116,9 @@
 
     socket.on('receivedProgram', function (data) {
         console.log('receivedProgram ' + JSON.stringify(data));
+        clearTimeout(currentTimeout);
+        ledController.setProgram(data);
+        currentTimeout = setInterval(loop, data.frequency);
     }) ;
 
     function wrappedIps(ipAddresses){
@@ -142,8 +153,8 @@
         });
     }
 
-    function sendRed() {
-        const program = {"frequency":1000,"lightPattern":"solid","colorPattern":"list","colors":["FF000000"]};
+    function sendColor(color) {
+        const program = {"frequency":1000,"lightPattern":"solid","colorPattern":"list","colors":[color]};
         sendProgram(program);
     }
 
@@ -153,19 +164,23 @@
             "lightPattern" : "fade",
             "colorPattern" : "list",
             "colors" : [
-                "FF000000",
-                "FF550000",
-                "FFBB0000",
-                "00FF0000",
-                "0000FF00",
-                "4400FF00",
-                "FF00FF00"
+                0xFF000000,
+                0xFF550000,
+                0xFFBB0000,
+                0x00FF0000,
+                0x0000FF00,
+                0x4400FF00,
+                0xFF00FF00
             ]
         };
         sendProgram(program);
     }
 
     function addColorToList(color) {
+        const backgroundColor = color;
+        if (color.length <= 6)
+            color = color + "00";
+        color = parseInt(color, 16);
         var found = false;
         for(var i=0;i<colors.length;i++){
             if(colors[i] === color){
@@ -175,8 +190,15 @@
         }
         if(!found){
             colors.push(color);
+            document.getElementById("colorList").innerHTML += '<div style="margin: 5px; width: 50px; height:50px; background: #' + backgroundColor + ';" onclick="removeColor(this, '+color+');"></div>';
         }
-        alert(JSON.stringify(colors));
+    }
+
+    function removeColor(element, color) {
+        element.remove();
+        colors = colors.filter(function(value, index, arr){
+            return value != color;
+        });
     }
 
     function showClientIPs() {
@@ -194,54 +216,78 @@
     }
 
     function sendOutage() {
-        socket.emit('sendColor',
-            {
-                color: 'FF00FF',
-                pattern: 'strobe',
-                frequency: '500',
-                destination: 'ALL'
-            });
+        const program = {
+            "frequency" : "500",
+            "lightPattern" : "strobe",
+            "colorPattern" : "list",
+            "colors" : [0xFF00FF00]
+        };
+        sendProgram(program);
     }
 
     function sendReleaseInProgress() {
-        socket.emit('sendColor',
-            {
-                color: '0000FF',
-                pattern: 'strobe',
-                frequency: '500',
-                destination: 'ALL'
-            });
+        const program = {
+            "frequency" : "500",
+            "lightPattern" : "strobe",
+            "colorPattern" : "list",
+            "colors" : [0x0000FF00]
+        };
+        sendProgram(program);
     }
 
     function sendHelpdeskRequest() {
-        socket.emit('sendColor',
-            {
-                color: 'FFFFFF',
-                pattern: 'strobe',
-                frequency: '500',
-                destination: 'ALL'
-            });
+        const program = {
+            "frequency" : "500",
+            "lightPattern" : "strobe",
+            "colorPattern" : "list",
+            "colors" : [0xFFFFFF00]
+        };
+        sendProgram(program);
     }
 
     function sendPhonesDown() {
-        socket.emit('sendColor',
-            {
-                color: '00FFFF',
-                pattern: 'strobe',
-                frequency: '500',
-                destination: 'ALL'
-            });
+        const program = {
+            "frequency" : "500",
+            "lightPattern" : "strobe",
+            "colorPattern" : "list",
+            "colors" : [0x00FFFF00]
+        };
+        sendProgram(program);
     }
 
     function sendInternetDown() {
-        socket.emit('sendColor',
-            {
-                color: 'FF5500',
-                pattern: 'strobe',
-                frequency: '500',
-                destination: 'ALL'
-            });
+        const program = {
+            "frequency" : "500",
+            "lightPattern" : "strobe",
+            "colorPattern" : "list",
+            "colors" : [0xFF550000]
+        };
+        sendProgram(program);
     }
+
+    function loop() {
+        //console.log(JSON.stringify(ledController.getPinSettingsFromProgram()));
+        var program = ledController.getPinSettingsFromProgram();
+        console.log(getColorAsString(program));
+        document.body.style.backgroundColor = '#' + getColorAsString(program);
+        console.log(JSON.stringify(program));
+    }
+
+    function getColorAsString(program) {
+        return decimalToHex(Math.floor(program.r), 2) + decimalToHex(Math.floor(program.g), 2) + decimalToHex(Math.floor(program.b), 2);
+    }
+
+    function decimalToHex(d, padding) {
+        var hex = Number(d).toString(16);
+        padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+
+        while (hex.length < padding) {
+            hex = "0" + hex;
+        }
+
+        return hex;
+    }
+
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

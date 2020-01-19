@@ -18,7 +18,13 @@ class LEDController {
             w: 0,
             pattern: 'normal',
             frequency: 100,
-            state: 'on'
+            state: 'on',
+            lightPattern: 'fade',
+            colorPattern: 'list',
+            colors: [0xFF000000],
+            numColors: 1,
+            currentColor: 0,
+            fadingIn: true
         };
     };
 
@@ -31,6 +37,12 @@ class LEDController {
             b: parseInt(result[3], 16),
             w: (result[4] != null) ? parseInt(result[4], 16) : 0
         } : null;
+    };
+
+    static hexStringToInt(hex) {
+        var result = /^#?([a-f\d]{2}[a-f\d]{2}[a-f\d]{2})([a-f\d]{2})?$/i.exec(hex);
+        var hexString = result[1] + ((result[2] != null) ? result[4] : '00');
+        return parseInt(hexString, 16);
     };
 
     //Gets a random int between [min, max). The minimum is inclusive and the maximum is exclusive
@@ -114,7 +126,7 @@ class LEDController {
     }
 
     goOutage() {
-        if (this.current.state == 'red') {
+        if (this.current.state === 'red') {
             return this.setReturnValue(255, 60, 0, 0, 'yellow');
         } else {
             return this.setReturnValue(255, 0, 0, 0, 'red');
@@ -131,7 +143,7 @@ class LEDController {
     }
 
     goChristmas() {
-        if (this.current.state == 'green') {
+        if (this.current.state === 'green') {
             return this.setReturnValue(LEDController.getRandomInt(0, 255), 0, 0, 0, 'red');
         } else {
             return this.setReturnValue(0, LEDController.getRandomInt(0, 255), 0, 0, 'green');
@@ -223,6 +235,204 @@ class LEDController {
         }
         return retVal;
     };
+
+    setLightPattern() {
+        if (this.current.lightPattern === "solid") {
+            this.current.state = 'on';
+            this.setIntensity(
+                LEDController.getRed(this.current.colors[this.current.currentColor]),
+                LEDController.getGreen(this.current.colors[this.current.currentColor]),
+                LEDController.getBlue(this.current.colors[this.current.currentColor]),
+                LEDController.getWhite(this.current.colors[this.current.currentColor])
+            );
+        } else if (this.current.lightPattern === "strobe") {
+            if (this.current.state === 'on') {
+                this.setIntensity(0,0,0,0);
+                this.current.state = 'off';
+            } else {
+                this.setIntensity(
+                    LEDController.getRed(this.current.colors[this.current.currentColor]),
+                    LEDController.getGreen(this.current.colors[this.current.currentColor]),
+                    LEDController.getBlue(this.current.colors[this.current.currentColor]),
+                    LEDController.getWhite(this.current.colors[this.current.currentColor])
+                );
+                this.current.state = 'on';
+            }
+        } else if (
+            (this.current.colorPattern === 'range' || this.current.colorPattern === 'randomrange')
+            && this.current.lightPattern === 'fade'
+        ) {
+            if (this.current.r < LEDController.getRed(this.current.colors[this.current.currentColor]))
+                this.current.fader.r = this.current.fader.r + this.current.fader.rRatio;
+            else if (this.current.r > LEDController.getRed(this.current.colors[this.current.currentColor]))
+                this.current.fader.r = this.current.fader.r - this.current.fader.rRatio;
+            if (this.current.g < LEDController.getGreen(this.current.colors[this.current.currentColor]))
+                this.current.fader.g = this.current.fader.g + this.current.fader.gRatio;
+            else if (this.current.g > LEDController.getGreen(this.current.colors[this.current.currentColor]))
+                this.current.fader.g = this.current.fader.g - this.current.fader.gRatio;
+            if (this.current.b < LEDController.getBlue(this.current.colors[this.current.currentColor]))
+                this.current.fader.b = this.current.fader.b + this.current.fader.bRatio;
+            else if (this.current.b > LEDController.getBlue(this.current.colors[this.current.currentColor]))
+                this.current.fader.b = this.current.fader.b - this.current.fader.bRatio;
+            if (this.current.w < LEDController.getWhite(this.current.colors[this.current.currentColor]))
+                this.current.fader.w = this.current.fader.w + this.current.fader.wRatio;
+            else if (this.current.w > LEDController.getWhite(this.current.colors[this.current.currentColor]))
+                this.current.fader.w = this.current.fader.w - this.current.fader.wRatio;
+            this.setIntensity(this.current.fader.r, this.current.fader.g, this.current.fader.b, this.current.fader.w);
+        } else if (this.current.lightPattern === "fade") {
+            if (this.current.fader.r <= 0 && this.current.fader.g <= 0 && this.current.fader.b <= 0 && this.current.fader.w <= 0) {
+                this.current.fadingIn = true;
+            } else if (
+                this.current.fader.r >= LEDController.getRed(this.current.colors[this.current.currentColor]) &&
+                this.current.fader.g >= LEDController.getGreen(this.current.colors[this.current.currentColor]) &&
+                this.current.fader.b >= LEDController.getBlue(this.current.colors[this.current.currentColor]) &&
+                this.current.fader.w >= LEDController.getWhite(this.current.colors[this.current.currentColor])) {
+                this.current.fadingIn = false;
+            }
+            if (this.current.fadingIn) {
+                if (this.current.fader.r < LEDController.getRed(this.current.colors[this.current.currentColor]))
+                    this.current.fader.r = this.current.fader.r + this.current.fader.rRatio;
+                if (this.current.fader.g < LEDController.getGreen(this.current.colors[this.current.currentColor]))
+                    this.current.fader.g = this.current.fader.g + this.current.fader.gRatio;
+                if (this.current.fader.b < LEDController.getBlue(this.current.colors[this.current.currentColor]))
+                    this.current.fader.b = this.current.fader.b + this.current.fader.bRatio;
+                if (this.current.fader.w < LEDController.getWhite(this.current.colors[this.current.currentColor]))
+                    this.current.fader.w = this.current.fader.w + this.current.fader.wRatio;
+            } else {
+                if (this.current.fader.r > 0) {
+                    this.current.fader.r = this.current.fader.r - this.current.fader.rRatio;
+                    if (this.current.fader.r < 0) this.current.fader.r = 0;
+                }
+                if (this.current.fader.g > 0) {
+                    this.current.fader.g = this.current.fader.g - this.current.fader.gRatio;
+                    if (this.current.fader.g < 0) this.current.fader.g = 0;
+                }
+                if (this.current.fader.b > 0) {
+                    this.current.fader.b = this.current.fader.b - this.current.fader.bRatio;
+                    if (this.current.fader.b < 0) this.current.fader.b = 0;
+                }
+                if (this.current.fader.w > 0) {
+                    this.current.fader.w = this.current.fader.w - this.current.fader.wRatio;
+                    if (this.current.fader.w < 0) this.current.fader.w = 0;
+                }
+            }
+            this.setIntensity(this.current.fader.r, this.current.fader.g, this.current.fader.b, this.current.fader.w);
+        }
+    }
+
+    setIntensity(r, g, b, w) {
+        this.current.r = Math.floor(r);
+        this.current.g = Math.floor(g);
+        this.current.b = Math.floor(b);
+        this.current.w = Math.floor(w);
+    }
+
+    setColorPattern() {
+        let changingColor = false;
+        if ((this.current.colorPattern === 'range' || this.current.colorPattern === 'randomrange') && this.current.lightPattern === 'fade') {
+            if (this.current.r === LEDController.getRed(this.current.colors[this.current.currentColor]) &&
+                this.current.g === LEDController.getGreen(this.current.colors[this.current.currentColor]) &&
+                this.current.b === LEDController.getBlue(this.current.colors[this.current.currentColor]) &&
+                this.current.w === LEDController.getWhite(this.current.colors[this.current.currentColor])) {
+                changingColor = true;
+            }
+        }
+        if (this.current.lightPattern === "fade") {
+            if (this.current.fader.r <= 0 &&
+                this.current.fader.g <= 0 &&
+                this.current.fader.b <= 0 &&
+                this.current.fader.w <= 0) {
+                changingColor = true;
+            }
+        } else {
+            if (this.current.state === "on") {
+                changingColor = true;
+            }
+        }
+        if (changingColor) {
+            if (this.current.colorPattern === "list" && this.current.numColors > 1) {
+                if (this.current.currentColor < (this.current.numColors - 1))
+                    this.current.currentColor++;
+                else
+                    this.current.currentColor = 0;
+            } else if (this.current.colorPattern === "randomlist") {
+                this.current.currentColor = Math.floor(Math.random() * this.current.numColors);
+            } else if (this.current.colorPattern === "range") {
+                if (this.current.currentColor < (this.current.numColors - 1))
+                    this.current.currentColor++;
+                else
+                    this.current.currentColor = 0;
+                this.current.fader.rRatio = Math.abs((this.current.r - LEDController.getRed(this.current.colors[this.current.currentColor])) / 255);
+                this.current.fader.gRatio = Math.abs((this.current.g - LEDController.getGreen(this.current.colors[this.current.currentColor])) / 255);
+                this.current.fader.bRatio = Math.abs((this.current.b - LEDController.getBlue(this.current.colors[this.current.currentColor])) / 255);
+                this.current.fader.wRatio = Math.abs((this.current.w - LEDController.getWhite(this.current.colors[this.current.currentColor])) / 255);
+            } else if (this.current.colorPattern === "randomrange") {
+                this.current.currentColor = Math.floor(Math.random() * this.current.numColors);
+                this.current.fader.rRatio = Math.abs((this.current.r - LEDController.getRed(this.current.colors[this.current.currentColor])) / 255);
+                this.current.fader.gRatio = Math.abs((this.current.g - LEDController.getGreen(this.current.colors[this.current.currentColor])) / 255);
+                this.current.fader.bRatio = Math.abs((this.current.b - LEDController.getBlue(this.current.colors[this.current.currentColor])) / 255);
+                this.current.fader.wRatio = Math.abs((this.current.w - LEDController.getWhite(this.current.colors[this.current.currentColor])) / 255);
+            } else if (this.current.colorPattern === "random") {
+                this.current.numColors = 1;
+                this.current.currentColor = 0;
+                this.current.colors[this.current.currentColor] = Math.random() * 2147483647;
+            }
+            if (this.current.lightPattern === 'fade' && this.current.colorPattern !== 'range' && this.current.colorPattern !== 'randomrange') {
+                this.current.fader.rRatio = LEDController.getRed(this.current.colors[this.current.currentColor]) / 255;
+                this.current.fader.gRatio = LEDController.getGreen(this.current.colors[this.current.currentColor]) / 255;
+                this.current.fader.bRatio = LEDController.getBlue(this.current.colors[this.current.currentColor]) / 255;
+                this.current.fader.wRatio = LEDController.getWhite(this.current.colors[this.current.currentColor]) / 255;
+
+            }
+        }
+    }
+
+    getPinSettingsFromProgram() {
+        this.setColorPattern();
+        this.setLightPattern();
+        return this.current;
+    }
+
+    setProgram(data) {
+        this.current.frequency = data.frequency;
+        this.current.lightPattern = data.lightPattern;
+        this.current.colorPattern = data.colorPattern;
+        const receivedColors = data.colors;
+        for (let i = 0; i < receivedColors.length; i++) {
+            this.current.colors[i] = receivedColors[i];
+            this.current.numColors = i + 1;
+        }
+        this.current.fader.r = 0;
+        this.current.fader.g = 0;
+        this.current.fader.b = 0;
+        this.current.fader.w = 0;
+        this.current.fadingIn = true;
+        this.current.currentColor = this.current.numColors - 1;
+        this.current.r = LEDController.getRed(this.current.colors[this.current.currentColor]);
+        this.current.g = LEDController.getGreen(this.current.colors[this.current.currentColor]);
+        this.current.b = LEDController.getBlue(this.current.colors[this.current.currentColor]);
+        this.current.w = LEDController.getWhite(this.current.colors[this.current.currentColor]);
+        this.current.fader.rRatio = LEDController.getRed(this.current.colors[this.current.currentColor]) / 255;
+        this.current.fader.gRatio = LEDController.getGreen(this.current.colors[this.current.currentColor]) / 255;
+        this.current.fader.bRatio = LEDController.getBlue(this.current.colors[this.current.currentColor]) / 255;
+        this.current.fader.wRatio = LEDController.getWhite(this.current.colors[this.current.currentColor]) / 255;
+    }
+
+    static getRed(color) {
+        return (color >> 24) & 0x000000FF;
+    }
+
+    static getGreen(color) {
+        return (color >> 16) & 0x000000FF;
+    }
+
+    static getBlue(color) {
+        return (color >> 8) & 0x000000FF;
+    }
+
+    static getWhite(color) {
+        return (color & 0x000000FF);
+    }
 }
 
 module.exports = LEDController;

@@ -67,8 +67,11 @@ app.get('/setColor', function(req, res) {
         current.pattern = pattern;
         current.frequency = frequency;
         current.color = color;
+        programState.frequency = frequency;
+        programState.lightPattern = "solid";
         var destination = req.query.destination != null ? req.query.destination : 'ALL';
         io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
+        io.sockets.emit('receivedProgram', programState);
         res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency+ " destination:" + destination);
 });
 
@@ -106,6 +109,7 @@ function setColor(data) {
 }
 
 function setProgramState(data) {
+    console.log(JSON.stringify(data));
     programState.frequency = data.frequency;
     programState.lightPattern = data.lightPattern;
     programState.colorPattern = data.colorPattern;
