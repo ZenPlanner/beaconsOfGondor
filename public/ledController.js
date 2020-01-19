@@ -259,9 +259,9 @@ class LEDController {
                 this.current.state = 'on';
             }
         } else if (
-                    (this.current.colorPattern === 'range' || this.current.colorPattern === 'randomrange')
-                    && this.current.lightPattern === 'fade'
-                  ) {
+            (this.current.colorPattern === 'range' || this.current.colorPattern === 'randomrange')
+            && this.current.lightPattern === 'fade'
+        ) {
             if (this.current.r < LEDController.getRed(this.current.colors[this.current.currentColor]))
                 this.current.fader.r = this.current.fader.r + this.current.fader.rRatio;
             else if (this.current.r > LEDController.getRed(this.current.colors[this.current.currentColor]))
@@ -325,6 +325,10 @@ class LEDController {
         this.current.g = Math.floor(g);
         this.current.b = Math.floor(b);
         this.current.w = Math.floor(w);
+        if (this.current.r < 0) this.current.r = 0;
+        if (this.current.g < 0) this.current.g = 0;
+        if (this.current.b < 0) this.current.b = 0;
+        if (this.current.w < 0) this.current.w = 0;
     }
 
     setColorPattern() {
