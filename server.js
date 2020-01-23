@@ -11,101 +11,40 @@
 //EC2 port forwarding for port 80
 //http://www.lauradhamilton.com/how-to-set-up-a-nodejs-web-server-on-amazon-ec2
 
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+let express = require('express');
+let app = express();
+let server = require('http').createServer(app);
+let io = require('socket.io').listen(server);
+let lc = require('./ledController.js');
 
-var current = {
-    color: '00000000',
-    r: 0,
-    g: 0,
-    b: 0,
-    w: 0,
-    pattern: 'normal',
-    frequency: 0,
-    state: 'off',
-    destination: 'ALL'
-};
-
-var programState = {
+let programState = {
     frequency: 1000,
     lightPattern: "solid",
     colorPattern: "list",
     colors: [
-        "FF000000",
-        "00FF0000",
-        "0000FF00",
-        "000000FF"
+        "00FF0000"
     ],
     destination: "all"
 };
 
-var clientIPAddresses = [];
-
-// Converts a 6-8 digit hex string to rgbw colors
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-        w: (result[4] != null) ? parseInt(result[4], 16) : 0
-    } : null;
-}
+let clientIPAddresses = [];
 
 app.get('/setColor', function(req, res) {
-
-        var color = req.query.color;
-        var pattern = req.query.pattern != null ? req.query.pattern : 'normal';
-        var frequency = req.query.frequency != null ? req.query.frequency : 1000;
-        var colorMap = hexToRgb(color);
-        current.r = colorMap.r;
-        current.g = colorMap.g;
-        current.b = colorMap.b;
-        current.w = colorMap.w;        
-        current.pattern = pattern;
-        current.frequency = frequency;
-        current.color = color;
-        programState.frequency = frequency;
-        programState.lightPattern = "solid";
-        var destination = req.query.destination != null ? req.query.destination : 'ALL';
-        io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
-        io.sockets.emit('receivedProgram', programState);
-        res.end("received: color:" + color + " pattern:" + pattern + " frequency:"+frequency+ " destination:" + destination);
-});
-
-app.get('/party', function(req, res) {
-
-        var color = req.query.color;
-        var pattern = req.query.pattern != null ? req.query.pattern : 'party';
-        var frequency = req.query.frequency != null ? req.query.frequency : 2000;
-        var colorMap = hexToRgb(color);
-        current.r = colorMap.r;
-        current.g = colorMap.g;
-        current.b = colorMap.b;
-        current.w = colorMap.w;        
-        current.pattern = pattern;
-        current.frequency = frequency;
-        current.color = color;
-        var destination = req.query.destination != null ? req.query.destination : 'ALL';
-        io.sockets.emit('receivedColor', {color:color, pattern:pattern, frequency:frequency, destination:destination});
-        res.end("received: color:" + color + " pattern:" + pattern + " frequency:" + frequency + " destination:" + destination);
+    setColor(req.query);
+    io.sockets.emit('receivedProgram', programState);
+    res.end("received: " + JSON.stringify(req.query));
 });
 
 function setColor(data) {
-    var color = data.color;
-    var pattern = data.pattern != null ? data.pattern : 'random';
-    var frequency = data.frequency != null ? data.frequency : 2000;
-    var colorMap = hexToRgb(color);
-    current.r = colorMap.r;
-    current.g = colorMap.g;
-    current.b = colorMap.b;
-    current.w = colorMap.w;
-    current.pattern = pattern;
-    current.frequency = frequency;
-    current.color = color;
-    current.destination = 'ALL';
+    programState.colors = [lc.hexStringToInt(data.color)];
+    programState.colorPattern = "list";
+    programState.frequency = data.frequency != null ? data.frequency : 2000;
+    programState.destination = data.destination != null ? data.destination : "all";
+    if (data.pattern === "strobe" || data.pattern === "fade") {
+        programState.lightPattern = data.pattern;
+    } else {
+        programState.lightPattern = "solid";
+    }
 }
 
 function setProgramState(data) {
@@ -120,11 +59,11 @@ app.use(express.static('./public')); //tell the server that ./public/ contains t
 
 
 io.sockets.on('connection',function(socket){
-    socket.emit('receivedColor', {color:current.color, pattern:current.pattern, frequency:current.frequency});
+    socket.emit('receivedProgram', programState);
 
 	socket.on('logIP', function(data) {
-            var found = false;
-            for(var i=0;i<clientIPAddresses.length;i++){
+            let found = false;
+            for(let i=0;i<clientIPAddresses.length;i++){
                 if(clientIPAddresses[i] === data.value){
                     found = true;
                     break;
@@ -137,17 +76,12 @@ io.sockets.on('connection',function(socket){
 		
     socket.on('sendColor',function(data){
         setColor(data);
-        var destination = data.destination != null ? data.destination : 'ALL';
-        io.sockets.emit('receivedColor',{color:current.color, pattern:current.pattern, frequency:current.frequency, destination:destination});
+        io.sockets.emit('receivedProgram',programState);
     });
 
     socket.on('sendProgram',function(data){
         setProgramState(data);
         io.sockets.emit('receivedProgram',programState);
-    });
-		
-    socket.on('led',function(data){
-        console.log(data);
     });
 		
 	socket.on('showIPs',function(data){
