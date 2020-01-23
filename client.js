@@ -11,11 +11,11 @@ var ledController = new lc();
 
 // setup the io pins
 var pins = [
-        new Gpio(23, {mode: Gpio.OUTPUT}), /* Red */
-        new Gpio(18, {mode: Gpio.OUTPUT}), /* Green */
-        new Gpio(15, {mode: Gpio.OUTPUT}), /* Blue */
-        new Gpio(14, {mode: Gpio.OUTPUT})  /* White */
-    ];
+    new Gpio(23, {mode: Gpio.OUTPUT}), /* Red */
+    new Gpio(18, {mode: Gpio.OUTPUT}), /* Green */
+    new Gpio(15, {mode: Gpio.OUTPUT}), /* Blue */
+    new Gpio(14, {mode: Gpio.OUTPUT})  /* White */
+];
 
 function setHardwarePins(current) {
     pins[0].pwmWrite(Math.floor(ledController.current.r));
@@ -25,33 +25,35 @@ function setHardwarePins(current) {
 }
 
 function loop() {
-    setHardwarePins(ledController.getPinSettings());
+    var program = ledController.getPinSettingsFromProgram();
+    //console.log(program);
+    setHardwarePins(program);
 }
 
 function getLocalIpAddresses() {
-   var addresses = [];
-   for (var k in interfaces) {
-       for (var k2 in interfaces[k]) {
-           var address = interfaces[k][k2];
-           if (address.family === 'IPv4' && !address.internal) {
-               addresses.push(address.address);
-           }
-       }
-   }
-   return addresses;
+    var addresses = [];
+    for (var k in interfaces) {
+        for (var k2 in interfaces[k]) {
+            var address = interfaces[k][k2];
+            if (address.family === 'IPv4' && !address.internal) {
+                addresses.push(address.address);
+            }
+        }
+    }
+    return addresses;
 }
 
 function printState() {
     var logString = "Fader Setting: r:"+ledController.current.fader.r+" g:"+ledController.current.fader.g+
-                    " b:"+ledController.current.fader.b+" w:"+ledController.current.fader.w+"\r\n"+
-                    "Current Settings: r:"+ledController.current.r+" g:"+ledController.current.g+
-                    " b:"+ledController.current.b+" w:"+ledController.current.w+" pattern:"+
-                    ledController.current.pattern+" frequency:"+ledController.current.frequency+
-                    " state:"+ledController.current.state
-		    + " \r\nrRatio: " +ledController.current.fader.rRatio + "\r\n"+
-		     " \r\ngRatio: " +ledController.current.fader.gRatio + "\r\n"+
-		     " \r\nbRatio: " +ledController.current.fader.bRatio + "\r\n"+
-		     " \r\nwRatio: " +ledController.current.fader.wRatio + "\r\n";
+        " b:"+ledController.current.fader.b+" w:"+ledController.current.fader.w+"\r\n"+
+        "Current Settings: r:"+ledController.current.r+" g:"+ledController.current.g+
+        " b:"+ledController.current.b+" w:"+ledController.current.w+" pattern:"+
+        ledController.current.pattern+" frequency:"+ledController.current.frequency+
+        " state:"+ledController.current.state
+        + " \r\nrRatio: " +ledController.current.fader.rRatio + "\r\n"+
+        " \r\ngRatio: " +ledController.current.fader.gRatio + "\r\n"+
+        " \r\nbRatio: " +ledController.current.fader.bRatio + "\r\n"+
+        " \r\nwRatio: " +ledController.current.fader.wRatio + "\r\n";
     console.log(logString);
 }
 
@@ -61,11 +63,12 @@ var currentTimeout = setInterval(loop, 1000);
 // Add a connect listener and log IP addresses on connect
 var myIPs = getLocalIpAddresses();
 socket.on('connect', function (data) {
-	for (var i in myIPs) {
-		socket.emit('logIP',{value:myIPs[i]});
-	}
+    for (var i in myIPs) {
+        socket.emit('logIP',{value:myIPs[i]});
+    }
 });
 
+/*
 socket.on('receivedColor', function (data) {
             clearTimeout(currentTimeout);
             var destination = data.destination != null ? data.destination : 'ALL';
@@ -76,3 +79,10 @@ socket.on('receivedColor', function (data) {
                 currentTimeout = setInterval(loop, data.frequency);
             }
 }) ;
+*/
+
+socket.on('receivedProgram', function (data) {
+    clearTimeout(currentTimeout);
+    ledController.setProgram(data);
+    currentTimeout = setInterval(loop, data.frequency);
+});
