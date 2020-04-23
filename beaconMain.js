@@ -7,80 +7,90 @@
 
 //https://github.com/jperkin/node-rpio
 
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
-var Gpio = require('pigpio').Gpio;
 
-var pinRed = new Gpio(23, {mode: Gpio.OUTPUT});
-var pinGreen = new Gpio(18, {mode: Gpio.OUTPUT});
-var pinBlue = new Gpio(15, {mode: Gpio.OUTPUT});
-var pinWhite = new Gpio(14, {mode: Gpio.OUTPUT});
+//EC2 port forwarding for port 80
+//http://www.lauradhamilton.com/how-to-set-up-a-nodejs-web-server-on-amazon-ec2
 
-// color: Hex color string
-// pattern:
-//      strobe: Flash color without fade
-//      fade: Flash color with fade
-// frequency:
+let express = require('express');
+let app = express();
+let server = require('http').createServer(app);
+let io = require('socket.io').listen(server);
+let lc = require('./ledController.js');
+
+let programState = {
+    frequency: 1000,
+    lightPattern: "solid",
+    colorPattern: "list",
+    colors: [
+        "00FF0000"
+    ],
+    destination: "all"
+};
+
+let clientIPAddresses = [];
 
 app.get('/setColor', function(req, res) {
-
-        var color = req.query.color;
-        console.log(color);
-        io.sockets.emit('recievedColor',{value:color});
-	    setColor(color);
-        res.end("I have received the ID: " + color);
+    setColor(req.query);
+    io.sockets.emit('receivedProgram', programState);
+    res.end("received: " + JSON.stringify(req.query));
 });
 
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
+function setColor(data) {
+    programState.colors = [lc.hexStringToInt(data.color)];
+    programState.colorPattern = "list";
+    programState.frequency = data.frequency != null ? data.frequency : 2000;
+    programState.destination = data.destination != null ? data.destination : "all";
+    if (data.pattern === "strobe" || data.pattern === "fade") {
+        programState.lightPattern = data.pattern;
+    } else {
+        programState.lightPattern = "solid";
+    }
 }
 
-function setColorPins(r, g, b, w) {
-	pinRed.pwmWrite(r);
-	pinGreen.pwmWrite(g);
-	pinBlue.pwmWrite(b);
-	pinWhite.pwmWrite(w);	
+function setProgramState(data) {
+    console.log(JSON.stringify(data));
+    programState.frequency = data.frequency;
+    programState.lightPattern = data.lightPattern;
+    programState.colorPattern = data.colorPattern;
+    programState.colors = data.colors;
 }
 
-function setColor(hexColor) {
-	colorMap = hexToRgb(hexColor);
-	if (colorMap != null) {
-		if (colorMap.r == 255 && colorMap.g == 255 && colorMap.b == 255)
-			setColorPins(0,0,0,255);
-		else
-			setColorPins(colorMap.r, colorMap.g, colorMap.b, 0);
-	}
-}
+app.use(express.static('./public')); //tell the server that ./public/ contains the static webpages
 
-app.use(express.static('/home/pi/beaconsOfGondor/public')); //tell the server that ./public/ contains the static webpages
-
-setColor("000000");
 
 io.sockets.on('connection',function(socket){
+    socket.emit('receivedProgram', programState);
 
-        socket.emit('hello',{value:'hello'}); //send the new client its address for auto registry??
+	socket.on('logIP', function(data) {
+            let found = false;
+            for(let i=0;i<clientIPAddresses.length;i++){
+                if(clientIPAddresses[i] === data.value){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                clientIPAddresses.push(data.value);
+            }
+	});
+		
+    socket.on('sendColor',function(data){
+        setColor(data);
+        io.sockets.emit('receivedProgram',programState);
+    });
 
-        socket.on('sendColor',function(data){
-                console.log(data);
-                io.sockets.emit('recievedColor',data);
-                setColor(data.value);
-            });
-
-
-        socket.on('led',function(data){
-                console.log(data);
-        });
-
+    socket.on('sendProgram',function(data){
+        setProgramState(data);
+        io.sockets.emit('receivedProgram',programState);
+    });
+		
+	socket.on('showIPs',function(data){
+	    console.log(data);
+        io.sockets.emit('receivedIPs',{addresses:clientIPAddresses});
+    });
 });
 
-server.listen(8082);
+server.listen(8080);
 console.log('running');
 
 
