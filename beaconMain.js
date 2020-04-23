@@ -11,13 +11,13 @@
 //EC2 port forwarding for port 80
 //http://www.lauradhamilton.com/how-to-set-up-a-nodejs-web-server-on-amazon-ec2
 
-let express = require('express');
-let app = express();
-let server = require('http').createServer(app);
-let io = require('socket.io').listen(server);
-let lc = require('./ledController.js');
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+var lc = require('./ledController.js');
 
-let programState = {
+var programState = {
     frequency: 1000,
     lightPattern: "solid",
     colorPattern: "list",
@@ -27,7 +27,7 @@ let programState = {
     destination: "all"
 };
 
-let clientIPAddresses = [];
+var clientIPAddresses = [];
 
 app.get('/setColor', function(req, res) {
     setColor(req.query);
