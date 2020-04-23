@@ -20,3 +20,11 @@ Schedule Auto-update of git repo:
 		grep CRON /var/log/syslog
 
 sudo npm install dotenv
+
+On Server Reboot need to reinitialize iptables routing:
+`sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080`
+
+Also, node might be using the wrong version:
+ `$ nvm install node`
+ Then try starting the server:
+ `nohup node server.js &`
