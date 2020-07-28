@@ -90,7 +90,7 @@
             function loop() {
                 //console.log(JSON.stringify(ledController.getPinSettingsFromProgram()));
                 var program = ledController.getPinSettingsFromProgram();
-                document.body.style.backgroundColor = '#' + getColorAsString(program);
+                document.getElementById('eyeColor').style.backgroundColor = '#' + getColorAsString(program);
             }
 
             function getColorAsString(program) {
