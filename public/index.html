@@ -83,9 +83,32 @@
                 document.getElementById('eyeColor').style.backgroundColor = newColor;
             }
 
+            // function loop() {
+            //     setBackgroundColor(ledController.getPinSettings());
+            // }
+
             function loop() {
-                setBackgroundColor(ledController.getPinSettings());
+                //console.log(JSON.stringify(ledController.getPinSettingsFromProgram()));
+                var program = ledController.getPinSettingsFromProgram();
+                document.body.style.backgroundColor = '#' + getColorAsString(program);
             }
+
+            function getColorAsString(program) {
+                return decimalToHex(Math.floor(program.r), 2) + decimalToHex(Math.floor(program.g), 2) + decimalToHex(Math.floor(program.b), 2);
+            }
+
+            function decimalToHex(d, padding) {
+                var hex = Number(d).toString(16);
+                padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+
+                while (hex.length < padding) {
+                    hex = "0" + hex;
+                }
+
+                return hex;
+            }
+
+            currentTimeout = setInterval(loop, 1000);
 
         </script>
     </body>
