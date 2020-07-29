@@ -20,14 +20,22 @@
         </div>
         <script src="./ledController.js"></script>
         <script type="text/javascript">
-            var socket = io.connect();
             var ledController = new LEDController();
-            var currentTimeout = 0;
+            var colors = [];
+            var socket = io.connect();
+            var currentTimeout = setInterval(loop, 1000);
 
             socket.on('receivedIPs', function (data) {
                 console.log(data);
                 document.getElementById("IPAddresses").innerHTML = data.addresses;
             });
+
+            socket.on('receivedProgram', function (data) {
+                console.log('receivedProgram ' + JSON.stringify(data));
+                clearTimeout(currentTimeout);
+                ledController.setProgram(data);
+                currentTimeout = setInterval(loop, data.frequency);
+            }) ;
 
             function showValue(newValue)
             {
