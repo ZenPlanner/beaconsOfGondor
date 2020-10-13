@@ -29,8 +29,6 @@ struct WifiAuthPair {
   char password[63];
 };
 
-//const char* ssid[3] = {"bigdar6", "bigdar2", "DEN-Public"};
-//const char* password[3] = {"aaaaaaaaaaaaafffffffffffff","aaaaaaaaaaaaabbbbbbbbbbbbb","ZuluPapa1116"};
 const char* ssid[0] = {};
 const char* password[0] = {};
 
