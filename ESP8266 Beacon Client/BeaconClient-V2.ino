@@ -3,6 +3,7 @@
 #include <SocketIoClient.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
+#include <EEPROM.h>
 
 /*
 
@@ -23,9 +24,16 @@ COLORS
 
 */
 
-const char* ssid[3] = {"YourSSID1", "YourSSID2", "YourSSID3"};
-const char* password[3] = {"YourWiFiPassword1","YourWiFiPassword2","YourWiFiPassword3"};
-const int knownNetworkCount = sizeof(ssid) / sizeof(ssid[0]);
+struct WifiAuthPair {
+  char ssid[32];
+  char password[63];
+};
+
+//const char* ssid[3] = {"bigdar6", "bigdar2", "DEN-Public"};
+//const char* password[3] = {"aaaaaaaaaaaaafffffffffffff","aaaaaaaaaaaaabbbbbbbbbbbbb","ZuluPapa1116"};
+const char* ssid[0] = {};
+const char* password[0] = {};
+
 DynamicJsonDocument jsonBuffer(1024);
 const int redPin = 13;
 const int greenPin = 15;
@@ -55,6 +63,8 @@ double blueRatio = 1;
 double whiteRatio = 1;
 double maxIntensity = 256;
 boolean settingUpWifi = false;
+boolean urlConnected = false;
+unsigned long connectionTimer = millis() + 30000;
 
 SocketIoClient socket;
 
@@ -62,13 +72,8 @@ ESP8266WebServer server(80);
 
 void setup() {
   Serial.begin(115200);
+  EEPROM.begin(512);
   connectToNetwork();
-
-  MDNS.begin("esp8266");
-  socket.on("connect", logIP);
-  socket.on("receivedProgram", setProgram);
-  socket.begin("ec2-54-172-251-229.compute-1.amazonaws.com");
-  analogWriteRange(256);
 }
 
 void connectToNetwork() {
@@ -79,28 +84,35 @@ void connectToNetwork() {
   delay(100);
 
   int numVisibleNetworks = WiFi.scanNetworks();
-  if (numVisibleNetworks == 0)
-    softReset();
-
+  WifiAuthPair wifiAuthPair;
+  EEPROM.get(0, wifiAuthPair);
   for (i = 0; i < numVisibleNetworks; i++) {
-    for (n = 0; n < knownNetworkCount; n++) {
-      if (strcmp(ssid[n], WiFi.SSID(i).c_str())) {
-        
-      } else {
+      if (!strcmp(wifiAuthPair.ssid, WiFi.SSID(i).c_str())) {
         networkFound = true;
-        break;
+        break; 
       }
+  }
+
+  if (networkFound) {
+    WiFi.begin(wifiAuthPair.ssid, wifiAuthPair.password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
     }
-    if (networkFound) break;
+    initializeSocketIo();
+  } else {
+    setupWifi();
   }
+}
 
-  if (!networkFound)
-    softReset();
-
-  WiFi.begin(ssid[n], password[n]);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-  }
+void initializeSocketIo() {
+  MDNS.begin("esp8266");
+  socket.on("connect", onConnect);
+  socket.on("receivedProgram", setProgram);
+  WifiAuthPair wifiAuthPair;
+  char url[256];
+  EEPROM.get(sizeof(wifiAuthPair), url);
+  socket.begin(url);
+  analogWriteRange(256);
 }
 
 void softReset() {
@@ -111,6 +123,7 @@ void setupWifi() {
   const char *ssid = "BeaconOfGondor";
   WiFi.softAP(ssid);
   server.on("/", handleRoot);
+  server.on("/network", handleNewNetwork);
   server.begin();
 }
 
@@ -118,6 +131,8 @@ void loop() {
   if (settingUpWifi) {
     server.handleClient();    
   } else {
+    if (!urlConnected && connectionTimer < millis())
+      setupWifi();
     socket.loop();
     programLoop();    
 //    currentRedIntensity = 0xFF;
@@ -138,7 +153,8 @@ void loop() {
   }
 }
 
-void logIP(const char * payload, size_t length) {
+void onConnect(const char * payload, size_t length) {
+  urlConnected = true;
   socket.emit("logIP", ("{\"value\":\""+WiFi.localIP().toString()+"\"}").c_str());
 }
 
@@ -151,7 +167,7 @@ void setColor(const char * payload, size_t length) {
   if (color.length() <= 6) {
     color = color + "00";
   }
-  colors[0] = strtoul(color.c_str(), NULL, 16);
+  colors[0] = strtoul(color.c_str(), NULL, 10);
   frequency = jsonBuffer["frequency"];
   if (jsonBuffer["pattern"] == "random") {
     colorPattern = "random";
@@ -305,9 +321,6 @@ void setLightPattern() {
       } 
     }
   }
-//  Serial.println(currentGreenIntensity);
-//  Serial.println(currentRedIntensity);
-//  Serial.println(currentBlueIntensity);
 }
 
 void fade(unsigned long color) {
