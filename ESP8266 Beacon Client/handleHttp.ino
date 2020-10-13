@@ -10,7 +10,7 @@ void handleRoot() {
 }
 
 void handleNewNetwork() {
-  if (server.hasArg("ssid")== false){
+  if (server.hasArg("ssid") == false) {
     server.send(200, "text/html", "Body not received");
     return;
   }
