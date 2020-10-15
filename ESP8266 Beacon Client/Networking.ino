@@ -18,20 +18,19 @@ void connectToNetwork() {
 
   if (networkFound) {
     WiFi.begin(wifiAuthPair.ssid, wifiAuthPair.password);
-	boolean enterWifiSetup = false;
     while (WiFi.status() != WL_CONNECTED) {
       if (connectionTimer < millis()) {
-		enterWifiSetup = true;
+        networkFound = false;
         break;
-	  } else {
-		delay(500);
-	  }
+      } else {
+        delay(500);
+      }
     }
-	if (enterWifiSetup) {
-		setupWifi();
-	} else {
-		initializeSocketIo();
-	}
+    if (networkFound) {
+      initializeSocketIo();
+    } else {
+      setupWifi();
+    }
   } else {
     setupWifi();
   }
