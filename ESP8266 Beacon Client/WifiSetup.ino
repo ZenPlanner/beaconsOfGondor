@@ -36,17 +36,6 @@ void connectToNetwork() {
   }
 }
 
-void initializeSocketIo() {
-  MDNS.begin("esp8266");
-  socket.on("connect", onConnect);
-  socket.on("receivedProgram", setProgram);
-  WifiAuthPair wifiAuthPair;
-  char url[256];
-  EEPROM.get(sizeof(wifiAuthPair), url);
-  socket.begin(url);
-  analogWriteRange(256);
-}
-
 void setupWifi() {
   settingUpWifi = true;
   const char *ssid = "BeaconOfGondor";
@@ -54,64 +43,6 @@ void setupWifi() {
   server.on("/", handleRoot);
   server.on("/network", handleNewNetwork);
   server.begin();
-}
-
-void onConnect(const char * payload, size_t length) {
-  urlConnected = true;
-  socket.emit("logIP", ("{\"value\":\""+WiFi.localIP().toString()+"\"}").c_str());
-}
-
-void setColor(const char * payload, size_t length) {
-  DeserializationError error = deserializeJson(jsonBuffer, payload);
-  if (error) {
-    return;
-  }
-  String color = jsonBuffer["color"];
-  if (color.length() <= 6) {
-    color = color + "00";
-  }
-  colors[0] = strtoul(color.c_str(), NULL, 10);
-  frequency = jsonBuffer["frequency"];
-  if (jsonBuffer["pattern"] == "random") {
-    colorPattern = "random";
-    lightPattern = "solid";
-  } else {
-    String myLP = jsonBuffer["pattern"];
-    lightPattern = myLP;
-    colorPattern = "solid";
-  }
-}
-
-void setProgram(const char * payload, size_t length) {
-  DeserializationError error = deserializeJson(jsonBuffer, payload);
-  if (error) {
-    return;
-  }
-  frequency = jsonBuffer["frequency"];
-  String myLP = jsonBuffer["lightPattern"];
-  lightPattern = myLP;
-  String myCP = jsonBuffer["colorPattern"];
-  colorPattern = myCP;
-  
-  JsonArray myColors = jsonBuffer["colors"].as<JsonArray>();
-  for (int i = 0; i < myColors.size(); i++) {
-    String color = jsonBuffer["colors"][i];
-    if (color.length() <= 6) {
-      color = color + "00";
-    }
-    colors[i] = strtoul(color.c_str(), NULL, 10);
-  }
-  numColors = myColors.size();
-  rFader = 0;
-  gFader = 0;
-  bFader = 0;
-  wFader = 0;
-  fadingIn = true;
-  currentColor = 0;
-  currentRedIntensity = 0;
-  currentGreenIntensity = 0;
-  currentBlueIntensity = 0;
-  currentWhiteIntensity = 0;
 }
 
 void handleRoot() {
