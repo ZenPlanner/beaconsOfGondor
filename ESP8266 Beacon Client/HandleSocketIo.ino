@@ -37,7 +37,7 @@ void setColor(const char * payload, size_t length) {
                 (int) (currentColor & 0x0000FF00) >> 8,  //blue
                 (int) (currentColor & 0x000000FF)        //white
               );
-  ledController.setProgram(1, colors, lightPattern, colorPattern);
+  ledController.setProgram(frequency, 1, colors, lightPattern, colorPattern);
 }
 
 void setProgram(const char * payload, size_t length) {
@@ -60,13 +60,13 @@ void setProgram(const char * payload, size_t length) {
     }
     unsigned long currentColor = strtoul(color.c_str(), NULL, 10);
     colors[i] = BeaconColor(
-                  (int) (currentColor & 0xFF000000) >> 24, //red
-                  (int) (currentColor & 0x00FF0000) >> 16, //green
-                  (int) (currentColor & 0x0000FF00) >> 8,  //blue
+                  (int) ((currentColor & 0xFF000000) >> 24), //red
+                  (int) ((currentColor & 0x00FF0000) >> 16), //green
+                  (int) ((currentColor & 0x0000FF00) >> 8),  //blue
                   (int) (currentColor & 0x000000FF)        //white
                 );
   }
-  ledController.setProgram(colorCount, colors, lightPattern, colorPattern);
+  ledController.setProgram(frequency, colorCount, colors, lightPattern, colorPattern);
 }
 
 LightPattern translateLightPattern(String lightPattern) {

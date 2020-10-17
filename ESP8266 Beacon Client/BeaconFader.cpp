@@ -16,10 +16,10 @@ void BeaconFader::init(BeaconColor sourceColor, BeaconColor destinationColor) {
   green = sourceColor.getGreen();
   blue = sourceColor.getBlue();
   white = sourceColor.getWhite();
-  rRatio = ((sourceColor.getRed() - destinationColor.getRed())/255) * -1;
-  gRatio = ((sourceColor.getGreen() - destinationColor.getGreen())/255) * -1;
-  bRatio = ((sourceColor.getBlue() - destinationColor.getBlue())/255) * -1;
-  wRatio = ((sourceColor.getWhite() - destinationColor.getWhite())/255) * -1;
+  rRatio = ((double)(sourceColor.getRed() - destinationColor.getRed())/((double)255)) * -1;
+  gRatio = ((double)(sourceColor.getGreen() - destinationColor.getGreen())/((double)255)) * -1;
+  bRatio = ((double)(sourceColor.getBlue() - destinationColor.getBlue())/((double)255)) * -1;
+  wRatio = ((double)(sourceColor.getWhite() - destinationColor.getWhite())/((double)255)) * -1;
 }
 
 bool BeaconFader::isComplete() {

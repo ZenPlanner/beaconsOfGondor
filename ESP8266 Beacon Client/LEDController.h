@@ -51,7 +51,7 @@ class LEDController {
 
   public:
     LEDController(int redPin, int greenPin, int bluePin, int whitePin);
-    void setProgram(int colorCount, BeaconColor colors[64], LightPattern lightPattern, ColorPattern colorPattern);
+    void setProgram(int frequency, int colorCount, BeaconColor colors[64], LightPattern lightPattern, ColorPattern colorPattern);
     BeaconColor getNext();
     void beaconLoop();
 };

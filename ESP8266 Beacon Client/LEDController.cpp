@@ -19,10 +19,11 @@ LEDController::LEDController(int redPin, int greenPin, int bluePin, int whitePin
   colors[1] = BeaconColor(0,255,0,0);
   colors[2] = BeaconColor(0,0,255,0);
   colors[3] = BeaconColor(0,0,0,255);
-  setProgram(colorCount, colors, lightPattern, colorPattern);
+  setProgram(frequency, colorCount, colors, lightPattern, colorPattern);
 }
 
-void LEDController::setProgram(int colorCount, BeaconColor colors[64], LightPattern lightPattern, ColorPattern colorPattern) {
+void LEDController::setProgram(int frequency, int colorCount, BeaconColor colors[64], LightPattern lightPattern, ColorPattern colorPattern) {
+  this -> frequency = frequency;
   if (colorCount == 0) {
     colors[0] = BeaconColor::off();
     colorCount = 1;  
