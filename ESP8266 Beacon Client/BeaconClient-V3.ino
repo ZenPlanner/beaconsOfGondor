@@ -40,8 +40,9 @@ void loop() {
   if (settingUpWifi) {
     server.handleClient();    
   } else {
-    if (!urlConnected && connectionTimer < millis())
+    if (!urlConnected && connectionTimer < millis()) {
       setupWifi();
+    }
     socket.loop();
     ledController.beaconLoop();
   }

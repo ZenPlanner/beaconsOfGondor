@@ -1,6 +1,6 @@
 #include "BeaconColor.h"
 
-BeaconColor::BeaconColor(){
+BeaconColor::BeaconColor() {
   red = 0;
   green = 0;
   blue = 0;

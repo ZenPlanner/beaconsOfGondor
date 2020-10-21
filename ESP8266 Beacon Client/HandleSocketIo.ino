@@ -70,9 +70,9 @@ void setProgram(const char * payload, size_t length) {
 }
 
 LightPattern translateLightPattern(String lightPattern) {
-  if (lightPattern == "fade")
+  if (lightPattern == "fade") {
     return LightPattern::FADE;
-  else if (lightPattern == "strobe") {
+  } else if (lightPattern == "strobe") {
     return LightPattern::STROBE;  
   }  
   return LightPattern::SOLID;
