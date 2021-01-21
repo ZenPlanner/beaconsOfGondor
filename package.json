@@ -4,7 +4,7 @@
   "description": "simple websockets with http get requests",
   "main": "beaconMain.js",
   "dependencies": {
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "express": "^4.16.4"
